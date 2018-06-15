@@ -29,10 +29,36 @@ import os
 
 #set home directory
 home_dir = '/Users/ninalopatina/Desktop/Rocket_RL/'
-code_dir = 'code/'
+code_dir = 'src/python/'
+config_dir = 'config/'
+
+import yaml
+
+import pandas as pd
+pd.set_option("display.max_columns",50)
+
+os.chdir(home_dir + config_dir)
+
+
+with open("config.yml", 'r') as ymlfile:
+    cfg = yaml.load(ymlfile)
+
+#TO DO: is this kosher? 
+all_var = cfg['in_var'].copy()
+for item in cfg['out_var']:
+    all_var.append(item)
+cfg['all_var']= all_var
+
+#set running params
+RL = 0
+
 
 #import the functions from the functions file
 os.chdir(home_dir + code_dir)
-import RocketRL_funcs_data as RocketData
+import data.util as RocketData
 
-RocketData.data_process()
+#rocketData = RocketData() 
+
+df, df_mini = RocketData.data_process(cfg,plotting2d = True)
+#RocketData.plotter('2d') ##QUESTION: does cfg go here? 
+
