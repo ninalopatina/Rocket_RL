@@ -2,7 +2,7 @@
 ### Reinforcement learning agent that runs fluid dynamics simulations for rocket engines
 
 ## By: Nina Lopatina
-### This project was developed when I was an Insight AI Fellow, summer 2018. 
+This project was developed when I was an Insight AI Fellow, summer 2018. 
 
 ## About
 This package presently imports fluid dynamics simulation data and plots the best-defined features. 
@@ -25,16 +25,16 @@ $ conda create -n newenvironment --file req.txt
 
 3. Copy files that are in the \envs folder into your gym/envs folder (with algorithmic, classic_control, etc. folders in it). The lines in \envs\__init__.py that were added to the pre-existing file are: 
 
-'''python 
+```python 
 from gym.envs.my_collection.my_awesome_env import SimpleCorridor
 register(
    	id='SimpleCorridor-v0',
    	entry_point='gym.envs.my_collection:SimpleCorridor',
 )
-'''
+```
 
 4. In terminal, cd to RocketRL.python folder, 
-'''Terminal
+```Terminal
 source activate newenvironment
 python main.py
-'''
+```
