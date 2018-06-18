@@ -25,40 +25,40 @@ Final Stage: what should ISP (measure of thrust) look like for a particular prob
 
 @author: ninalopatina
 """
-import os 
+import yaml
+import os
 
 #set home directory
-home_dir = '/Users/ninalopatina/Desktop/Rocket_RL/'
-code_dir = 'src/python/'
+home_dir = '/Users/ninalopatina/gitrepos/Rocket_RL/'
 config_dir = 'config/'
 
-import yaml
-
-import pandas as pd
-pd.set_option("display.max_columns",50)
-
-os.chdir(home_dir + config_dir)
-
-
-with open("config.yml", 'r') as ymlfile:
+with open(home_dir + config_dir+"config.yml", 'r') as ymlfile:
     cfg = yaml.load(ymlfile)
 
-#TO DO: is this kosher? 
+#TO DO: is below kosher? 
+
+#add a few variables to cfg: 
+cfg['home_dir'] = home_dir    
+    
 all_var = cfg['in_var'].copy()
 for item in cfg['out_var']:
     all_var.append(item)
 cfg['all_var']= all_var
 
-#set running params
-RL = 0
-
-
 #import the functions from the functions file
-os.chdir(home_dir + code_dir)
-import data.util as RocketData
+os.chdir(home_dir + cfg['code_dir'])
+import func.data_processing as RocketData
+import func.run_env as RocketRunEnv
+import func.RL_results as RocketPlot
 
+#TO do: set up class and run like this:
 #rocketData = RocketData() 
+#RocketData.plotter('2d') 
 
+#Load and process data:
 df, df_mini = RocketData.data_process(cfg,plotting2d = True)
-#RocketData.plotter('2d') ##QUESTION: does cfg go here? 
+
+#Run your agent in the custom environment:
+df, df1, df_experiment = RocketRunEnv.run_env(cfg)
+RocketPlot.plot_results(cfg,df, df1, df_experiment)
 

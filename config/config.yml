@@ -1,0 +1,100 @@
+
+    #files & folders
+code_dir: RocketRL/python
+data_dir: data/
+fig_dir: figures/
+data_file: 'rocket_data.csv' #most of the data
+# data_file: data1.csv #initial data set
+
+
+#plotting variables:
+#RL plots:
+colors:
+  Total Reward: k
+  Reward: b
+  episodes: g
+  Input Temp: m
+  Output Temp: r
+  Num steps: k
+  Action: g 
+  
+#RL model variables:
+gamma: 0.618
+n_exp: 101 # number of experiments to run 
+
+action_map:
+  0: 1
+  1: 2
+  2: 3
+  3: 4
+  4: -1
+  5: -2
+  6: -3
+  7: -4
+
+#variables to change the scale for:
+change_scale:
+  - I_CH4_g/s
+  - I_O2_g/s
+
+#naming
+in_var:
+  - I_CH4_g/s
+  - I_CH4_t
+  - I_O2_g/s
+  - I_O2_t
+
+out_var:
+  - O_CH4_flow_uniformity
+  - O_CH4_mol_frac
+  - O_t
+
+#corresponding names, for figure labeling: p
+in_var_name:
+  - CH4 flow rate, g/s
+  - CH4 temp (K)
+  - O2 flow rate, g/s
+  - O2 temp (K)'
+
+out_var_name:
+  - CH4 flow uniformity
+  - CH4 mol frac
+  - output temp (K)
+
+#data
+
+#Observations that are the basis of plotted variables:
+#O2 flow rate is highly predictive of CH4 flow uniformity & CH4 mol frac
+#O2 temp is highly predictive of output temp
+#CH4 flow rate is slightly predictive of CH4 mol frac
+#O2 temp is slightly predictive of CH4 flow uniformity
+
+#Plot the specific variables based on the above observations:
+xs:
+  - I_O2_t
+  - I_O2_g/s
+  - I_O2_g/s
+  - I_CH4_g/s
+  - I_O2_t
+
+ys:
+  - O_t
+  - O_CH4_flow_uniformity
+  - O_CH4_mol_frac
+  - O_CH4_mol_frac
+  - O_CH4_flow_uniformity
+
+#corresponding name
+x_names:
+  - O2 temp (K)
+  - O2 flow rate, g/s
+  - O2 flow rate, g/s
+  - CH4 flow rate, g/s
+  - O2 temp (K)
+
+y_names:
+  - output temp (K)
+  - CH4 flow uniformity
+  - CH4 mol frac
+  - CH4 mol frac
+  - CH4 flow uniformity

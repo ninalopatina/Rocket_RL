@@ -8,16 +8,11 @@ Created on Tue Jun 12 11:57:40 2018
 #import all the packages for funcs
 import pandas as pd
 import numpy as np
-import pickle
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
-from sklearn import datasets, linear_model
-from sklearn.metrics import mean_squared_error, r2_score
 import statsmodels.api as sm
 from numpy import ones,vstack
 from numpy.linalg import lstsq
-from matplotlib.backends.backend_pdf import PdfPages
-import gym
 
 #class RocketData():
 
@@ -101,8 +96,6 @@ def plot_2var(cfg,df,x,y,i):
         ax.annotate(s2,(350,250),size= 12)
         #draw the line:
         graph(my_formula,m,c, x_range=range(200, 1000))
-        # Print out the statistics
-        print(model.summary())
     #save each as png    
     save_dir = (cfg['home_dir'] + cfg['fig_dir'])    
     fig.savefig(save_dir + str(i)+".png")
@@ -113,12 +106,9 @@ def make_mini(cfg,df):
     approx['I_O2_t'] = round(approx['I_O2_t']/10,0)*10
     mini_df = approx.copy()
 
-
-
     for var in cfg['in_var'][:-1]:
         mini_df = mini_df[mini_df[var]== float(mini_df[var].mode())]  
 
-    print(mini_df.size)
 #    mini_df.plot.scatter(x='I_O2_t', y = 'O_T')
     return mini_df
        
