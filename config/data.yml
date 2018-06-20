@@ -1,7 +1,42 @@
 
     #files & folders
+<<<<<<< HEAD:config/data.yml
 data_file_path: data/rocket_data.csv #most of the data
 result_path: figures/
+=======
+code_dir: RocketRL/python
+data_dir: data/
+fig_dir: figures/
+data_file: 'rocket_data.csv' #most of the data
+# data_file: data1.csv #initial data set
+
+
+#plotting variables:
+#RL plots:
+colors:
+  Total Reward: k
+  Reward: b
+  episodes: g
+  Input Temp: m
+  Output Temp: r
+  Num steps: k
+  Action: g 
+  Target: g
+  
+#RL model variables:
+gamma: 0.618
+n_exp: 10000 # number of experiments to run 
+
+action_map:
+  0: 1
+  1: 2
+  2: 3
+  3: 4
+  4: -1
+  5: -2
+  6: -3
+  7: -4
+>>>>>>> added target temp to state space so Q-agent trains on and an solve any temp change:config/config.yml
 
 #variables to change the scale for:
 change_scale:

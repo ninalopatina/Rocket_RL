@@ -25,17 +25,16 @@ with open(config_path, 'r') as ymlfile:
 #import model.agent.random_agent as random_agent
 
 
-def run_env():
+def run_temp():
     #load my custom environment
     env = gym.make('SimpleTemp-v0')
 
     #TO DO: test that the environment has right dimensions:
-
     #start at the beginning
-    state = env.reset()
+#    state = env.reset()
 
     #initialize Q-values & Total reward (G):
-    Q = np.zeros([env.observation_space.n[0], env.action_space.n])
+    Q = np.zeros([env.observation_space.spaces[0].n,env.observation_space.spaces[1].n, env.action_space.n])
     G = 0
 
     #Make a dataframe to track progress over the course of experiments:
@@ -53,9 +52,12 @@ def run_env():
 
                 #from your current state, get input temp:
                 in_state = int([state][0][0][0])
+                #for the purpose of our q-values, we're re-setting the q-values where index 0 is
+                #the min temp
+                target = int(state[0][1]) - env.low_state[1]
 
                 #use amax instead of argmax in case 2 actions have equal value
-                winner = np.argwhere(Q[in_state] == np.amax(Q[in_state]))
+                winner = np.argwhere(Q[in_state,target] == np.amax(Q[in_state,target]))
                 action = random.choice(winner) #in case there are tied q-values
 
                 act = action[0] #data array workaround
@@ -66,7 +68,9 @@ def run_env():
                 #track the start state and action for this step
                 #multiply by 10 to reflect actual temp
                 df.at[counter,'Input Temp'] = float(state[0][0]*10)
-                df.at[counter,'Output Temp'] = float(state[0][1]*10)
+                df.at[counter,'Output Temp'] = float(state[0][2]*10)
+
+                df.at[counter,'Target'] = (target + env.low_state[1])*10
                 df.at[counter,'Action'] = float(cfg['action_map'][act]*10)
                 df.at[counter,'Reward'] = float(reward) #track reward you got for your action
 
@@ -74,10 +78,18 @@ def run_env():
                 in_state2 = int([state2][0][0][0])
 
                 #attribute the Q-value for that state,action from the reward you got
-                Q[in_state,action] = (reward + cfg['gamma'] * np.max(Q[in_state2]))
+                if in_state2>=80:
+                    print(in_state2,in_state,target,action)
+                Q[in_state,target,action] = (reward + cfg['gamma'] * np.max(Q[in_state2,target]))
                 G += reward
                 counter += 1
                 state = state2
+
+                if counter>1000:
+#                    print(in_state2,in_state,target,action)
+                    df.plot()
+                    break
+
         if episode == 1:
             df1 = df.copy() #save the first run
 

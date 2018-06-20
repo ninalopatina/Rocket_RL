@@ -38,14 +38,15 @@ def plot_each(cfg,DF,sup_title,y_label, fig, axes):
     fig.suptitle(sup_title,fontsize =20 )
 
     for i ,varr in enumerate(DF.columns):
-        plot_var(cfg,DF.copy(), i,varr, sup_title,y_label,axes)
+        plot_var(cfg,DF.copy(), i,varr, sup_title,y_label,axes,custom_plot)
 
     save_dir = (cfg['home_dir'] + cfg['fig_dir'])
+
     fig.savefig(save_dir + sup_title+".png")
     return fig, axes
 
 
-def plot_var(cfg,DF_plot, i,varr, sup_title,x_label,axes):
+def plot_var(cfg,DF_plot, i,varr, sup_title,x_label,axes,custom_plot):
     DF_plot['index'] = DF_plot.index
     color = cfg['colors'][varr]
     if sup_title == 'First episode':
@@ -72,34 +73,58 @@ def plot_var(cfg,DF_plot, i,varr, sup_title,x_label,axes):
 
     ax.set_ylabel(varr, fontsize =12)
 
-    if 'Action' in varr:
-        ax.set_ylim(-50,50)
-        ax.set_yticks([-40,-20,0,20,40])
-        ax.set_xlim(-10,550)
-        xmin = -10
-        xmax = 550
+    if sup_title != 'Results over episodes':
+        targ = DF_plot['Target'][0]
+        strt = DF_plot['Output Temp'][0]
 
-    if 'Temp' in varr:
-        ax.set_ylabel('Temp', fontsize =12)
-        ax.set_ylim(0,800)
-        xmin = -10
-        xmax = 550
+    if custom_plot == True:
 
-        ax.set_xlim(xmin,xmax)
-        start = 150
-        goal = 650
-        offset = -310
-        ax.hlines(y=start, xmin=xmin, xmax=xmax, colors='y', linestyles= 'dashed')
-        ax.annotate('Start',[xmax+offset,start-20],size = 12)
-        ax.hlines(y=goal, xmin=xmin, xmax=xmax, colors='c', linestyles= 'dashed')
-        ax.annotate('Goal',[xmax+offset,goal-20],size = 12)
+        if 'Action' in varr:
+            ax.set_ylim(-50,50)
+            ax.set_yticks([-40,-20,0,20,40])
+            ax.set_xlim(-10,550)
+            xmin = -10
+            xmax = 1010
 
-    if varr =='Reward':
-        ax.set_ylim(-5500,250)
-        xmin = -10
-        xmax = 550
-        ax.set_xlim(xmin,xmax)
-        ax.set_ylabel(varr, fontsize =12)
+        if 'Temp' in varr:
+            ax.set_ylabel('Temp', fontsize =12)
+            ax.set_ylim(0,800)
+
+            xmin = -10
+            xmax = 550
+            ax.set_xlim(xmin,xmax)
+
+            offset = -310
+            ax.hlines(y=strt, xmin=xmin, xmax=xmax, colors='y', linestyles= 'dashed')
+            ax.annotate('Start',[xmax+offset,strt-20],size = 12)
+            ax.hlines(y=targ, xmin=xmin, xmax=xmax, colors='c', linestyles= 'dashed')
+            ax.annotate('Goal',[xmax+offset,targ-20],size = 12)
+
+
+
+        if varr =='Reward':
+            ax.set_ylim(-5500,250)
+            xmin = -10
+            xmax = 550
+            ax.set_xlim(xmin,xmax)
+            ax.set_ylabel(varr, fontsize =12)
+    else:
+        if 'Action' in varr:
+            ax.set_ylim(-50,50)
+            ax.set_yticks([-40,-20,0,20,40])
+        if 'Output Temp' in varr:
+            ax.set_ylabel('Temp', fontsize =12)
+            ax.set_ylim(0,800)
+
+            xmin = ax.get_xlim()[0]
+            xmax = ax.get_xlim()[1]
+
+            offset = -310
+            ax.hlines(y=strt, xmin=xmin, xmax=xmax, colors='y', linestyles= 'dashed')
+            ax.annotate('Start',[xmin+10,strt-20],size = 12)
+            ax.hlines(y=targ, xmin=xmin, xmax=xmax, colors='c', linestyles= 'dashed')
+            ax.annotate('Goal',[xmax-10,targ-20],size = 12)
+
 
     ax.yaxis.tick_right()
 
@@ -107,8 +132,8 @@ def plot_results(cfg,df, df1, df_experiment):
     fig = 0
     axes = 0
 
-    fig, axes = plot_each(cfg,df_experiment,'Results over episodes','episode',fig=fig, axes =axes)
+    fig, axes = plot_each(cfg,df_experiment,'Results over episodes','episode',fig=fig, axes =axes,custom_plot=False)
 
-    fig, axes = plot_each(cfg,df1,'First episode','step',fig=fig, axes =axes)
+    fig, axes = plot_each(cfg,df1,'First episode','step',fig=fig, axes =axes,custom_plot=False)
 
-    fig, axes = plot_each(cfg,df,'Last episode','step',fig=fig, axes =axes)
+    fig, axes = plot_each(cfg,df,'Last episode','step',fig=fig, axes =axes,custom_plot=False)
