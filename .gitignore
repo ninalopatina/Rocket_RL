@@ -1,0 +1,14 @@
+# figures
+figures/
+
+# references to ignore
+RocketRL/python/refs
+
+# work in progress
+RocketRL/python/agent
+
+# pycache
+__pycache__/
+
+# extensions to ignore
+*.pyc

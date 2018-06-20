@@ -1,0 +1,30 @@
+#plotting variables:
+
+#RL model variables:
+gamma: 0.618
+n_exp: 101 # number of experiments to run 
+
+#TO DO: move this to relevant func. when done
+#RL plots:
+colors:
+  Total Reward: k
+  Reward: b
+  episodes: g
+  Input Temp: m
+  Output Temp: r
+  Num steps: k
+  Action: g 
+  
+
+#TO DO: remove when agent works in continuous space  
+#mapping of actions space to actual action taken
+action_map:
+  0: 1
+  1: 2
+  2: 3
+  3: 4
+  4: -1
+  5: -2
+  6: -3
+  7: -4
+
