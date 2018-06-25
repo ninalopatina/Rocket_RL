@@ -11,7 +11,8 @@ This package presently imports fluid dynamics simulation data and plots the best
 * RocketRL.python.main.py is the main function that calls the other scripts and data.
 * RocketRL.python.func.data_processing.py has all of the data importing, processing, and visualization functions.
 * RocketRL.python.func.run_env.py runs the agent in the custom environment.
-* RocketRL.python.envs.my_collection.my_awesome_env.py contains the custom env for this task.
+* RocketRL.python.func.RL_results.py plots the results from the trials in the custom environment.
+* RocketRL.python.envs.RocketRL.RocketEnv.py contains the custom env for this task.
 
 ## To run:
 
@@ -41,6 +42,9 @@ $ brew install snappy
 ```Bash
 export PYTHONPATH=$PYTHONPATH:`pwd`/RocketRL/python
 ```
+
+4b. Temporary: for now, env folder contents have to be copied to openAI gym folder
+(note to self: change this to incorporate with rllib)
 
 5. In terminal,
 ```Bash

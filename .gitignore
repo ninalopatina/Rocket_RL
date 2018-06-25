@@ -12,3 +12,4 @@ __pycache__/
 
 # extensions to ignore
 *.pyc
+*.p

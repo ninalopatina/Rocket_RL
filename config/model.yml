@@ -1,8 +1,25 @@
-#plotting variables:
+#paths:
+result_path: results/
+pickle_path: pickles/
+fig_path: model/figures/
+
+#Nina variables:
+training: True #toggle this to train or deploy model
+testing: 1 #1 is 50* change; 2 is random; 3 is max to min 
 
 #RL model variables:
+
 gamma: 0.618
-n_exp: 101 # number of experiments to run 
+n_exp: 20 # number of experiments to run 
+
+
+ 
+max_steps: 5000  #terminate an episode past this #
+#plotting variables:
+
+#plot variables:
+
+fs: 14 #fontsize for x & y labels
 
 #TO DO: move this to relevant func. when done
 #RL plots:
@@ -10,21 +27,10 @@ colors:
   Total Reward: k
   Reward: b
   episodes: g
-  Input Temp: m
-  Output Temp: r
+  Input Temp1: m
+  Input Temp2: r
+  Output Temp: k
   Num steps: k
   Action: g 
-  
-
-#TO DO: remove when agent works in continuous space  
-#mapping of actions space to actual action taken
-action_map:
-  0: 1
-  1: 2
-  2: 3
-  3: 4
-  4: -1
-  5: -2
-  6: -3
-  7: -4
+  Target: y 
 
