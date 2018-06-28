@@ -1,0 +1,184 @@
+#paths:
+
+#data
+data_file_path: data/rocket_data.csv #most of the data
+result_path: results/
+#both of the below are in the results folder
+pickle_path: pickles/
+data_result_path: data/figures/
+labels_path: video_labels/
+
+
+
+#model
+#both of the below are in the results folder
+pickle_path: pickles/
+model_result_path: model/figures/
+
+#Model variables
+#Nina variables:
+training: True #toggle this to train or deploy model
+testing: 2 #1 is 50* change; 2 is random; 3 is max to min 
+
+#RL model variables:
+
+gamma: 0.618
+n_exp: 20 # number of experiments to run 
+ 
+#
+MSE_thresh1: 5
+MSE_thresh2: 5
+MSE_thresh3: 50
+
+MSE1_scale: 2
+MSE2_scale: 2
+MSE3_scale: 1
+
+rew: 10000
+action_range: 10
+
+scaler: 
+  - 10
+  - .1 
+  - 10
+  - .1
+  - 10
+  - 10
+  - .1
+
+minmaxbuffer: .1 #keeps this portion below/above min/max out of goal values
+
+max_steps: 5000  #terminate an episode past this #
+#plotting variables:
+
+#plot variables:
+#video:
+
+ftype: .png
+labels1:
+  G1F: Gas 1 Flow
+  G1T: Gas 1 Temp
+
+labels2: 
+  one: 1
+  two: 2
+  three: 3
+  four: 4
+  five: 5
+  six: 6
+  seven: 7
+  eight: 8
+  nine: 9
+
+locations:
+  0: 1
+  1: 3
+  2: 5
+  3: 7
+
+
+
+label_mult: 10 #Multiply length of characters by this
+label_height: 25
+
+fs: 14 #fontsize for x & y labels
+
+#TO DO: move this to relevant func. when done
+#RL plots:
+colors:
+  Total Reward: k
+  Reward: b
+  episodes: g
+  Input Temp1: m
+  Input Temp2: r
+  Output Temp: k
+  Num steps: k
+  Action: g 
+  Target: y 
+
+#Data variables
+
+#regression variables: 
+# Alpha (regularization strength) of LASSO regression
+lasso_eps: 0.0001
+lasso_nalpha: 40
+lasso_iter: 500000
+# Min and max degree of polynomials features to consider
+degree_min: 3
+degree_max: 3
+cv: 5
+# Test/train split
+test_set_fraction: .2
+
+
+
+#data management variables: 
+
+#variables to change the scale for:
+change_scale:
+  - I_CH4_g/s
+  - I_O2_g/s
+
+#naming
+in_var:
+  - I_CH4_g/s
+  - I_CH4_t
+  - I_O2_g/s
+  - I_O2_t
+
+out_var:
+  - O_CH4_flow_uniformity
+  - O_CH4_mol_frac
+  - O_t
+
+#corresponding names, for figure labeling: 
+in_var_name:
+  - CH4 flow rate, g/s
+  - CH4 temp (K)
+  - O2 flow rate, g/s
+  - O2 temp (K)'
+
+out_var_name:
+  - CH4 flow uniformity
+  - CH4 mol frac
+  - output temp (K)
+
+
+#TO DO: move this to relevant func when done
+#data
+
+#Observations that are the basis of plotted variables:
+#O2 flow rate is highly predictive of CH4 flow uniformity & CH4 mol frac
+#O2 temp is highly predictive of output temp
+#CH4 flow rate is slightly predictive of CH4 mol frac
+#O2 temp is slightly predictive of CH4 flow uniformity
+
+#Plot the specific variables based on the above observations:
+xs:
+  - I_O2_t
+  - I_O2_g/s
+  - I_O2_g/s
+  - I_CH4_g/s
+  - I_O2_t
+
+ys:
+  - O_t
+  - O_CH4_flow_uniformity
+  - O_CH4_mol_frac
+  - O_CH4_mol_frac
+  - O_CH4_flow_uniformity
+
+#corresponding name
+x_names:
+  - O2 temp (K)
+  - O2 flow rate, g/s
+  - O2 flow rate, g/s
+  - CH4 flow rate, g/s
+  - O2 temp (K)
+
+y_names:
+  - output temp (K)
+  - CH4 flow uniformity
+  - CH4 mol frac
+  - CH4 mol frac
+  - CH4 flow uniformity

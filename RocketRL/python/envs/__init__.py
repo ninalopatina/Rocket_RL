@@ -4,8 +4,8 @@ from gym.envs.registration import registry, register, make, spec
 # ----------------------------------------
 
 register(
-   	id='SimpleTemp-v0',
-   	entry_point='gym.envs.RocketRL:SimpleTemp',
+   	id='TwoTemp-v0',
+   	entry_point='gym.envs.RocketRL:TwoTemp',
 )
 
 register(
