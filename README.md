@@ -10,9 +10,8 @@ This package presently imports fluid dynamics simulation data and plots the best
 * config.model.yml has all of the user-set values for the model functions is called by the main function.
 * RocketRL.python.main.py is the main function that calls the other scripts and data.
 * RocketRL.python.func.data_processing.py has all of the data importing, processing, and visualization functions.
-* RocketRL.python.func.run_env.py runs the agent in the custom environment.
-* RocketRL.python.func.RL_results.py plots the results from the trials in the custom environment.
-* RocketRL.python.envs.RocketRL.RocketEnv.py contains the custom env for this task.
+* RocketRL.python.func.ray_funcs.py plots some of the outputs from the RL algorithm 
+* RocketRL.python.envs.RocketRL.RocketEnv_2T.py contains the custom env for this task.
 
 ## To run:
 
@@ -43,14 +42,17 @@ $ brew install snappy
 export PYTHONPATH=$PYTHONPATH:`pwd`/RocketRL/python
 ```
 
-4b. Temporary: for now, env folder contents have to be copied to openAI gym folder
-(note to self: change this to incorporate with rllib)
+5. The contents of the env folder have to be copied to openAI gym envs folder for the rollout to work properly:
+python3.6/site-packages/gym/envs/
 
-5. In terminal,
+6. In terminal,
 ```Bash
 source activate newenvironment
 python RocketRL/python/main.py
 ```
+7. To see your agent rendered in the rollout, run the below command in terminal, from the directory in which ray is installed. You will have to put the name of the folder in which the checkpoints are located in {folder_name}, for example, 'PPO_TwoTemp_0_2018-06-27_20-17-32lqfkwaol', and also indicate the checkpoint (that you have already trained past) #, i.e. 20, and number of steps, i.e. 50000
+
+python ray/python/ray/rllib/rollout.py ~/ray_results/RocketRL/{folder_name}/checkpoint-{checkpoint} --run PPO --env TwoTemp-v0 --steps {nsteps}
 
 ## To customize:
 In the config.model.yml file, there are a few variables you can play with to get a feel for the model:
