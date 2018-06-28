@@ -26,9 +26,9 @@ gamma: 0.618
 n_exp: 20 # number of experiments to run 
  
 #
-MSE_thresh1: 5
-MSE_thresh2: 5
-MSE_thresh3: 50
+MSE_thresh1: 1
+MSE_thresh2: 1
+MSE_thresh3: 20
 
 MSE1_scale: 2
 MSE2_scale: 2

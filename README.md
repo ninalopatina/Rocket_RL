@@ -45,14 +45,17 @@ export PYTHONPATH=$PYTHONPATH:`pwd`/RocketRL/python
 5. The contents of the env folder have to be copied to openAI gym envs folder for the rollout to work properly:
 python3.6/site-packages/gym/envs/
 
-6. In terminal,
+6. In terminal, from 
 ```Bash
 source activate newenvironment
 python RocketRL/python/main.py
 ```
+
 7. To see your agent rendered in the rollout, run the below command in terminal, from the directory in which ray is installed. You will have to put the name of the folder in which the checkpoints are located in {folder_name}, for example, 'PPO_TwoTemp_0_2018-06-27_20-17-32lqfkwaol', and also indicate the checkpoint (that you have already trained past) #, i.e. 20, and number of steps, i.e. 50000
 
+```Bash
 python ray/python/ray/rllib/rollout.py ~/ray_results/RocketRL/{folder_name}/checkpoint-{checkpoint} --run PPO --env TwoTemp-v0 --steps {nsteps}
+```
 
 ## To customize:
 In the config.model.yml file, there are a few variables you can play with to get a feel for the model:

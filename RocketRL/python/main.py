@@ -31,7 +31,6 @@ from __future__ import print_function
 
 #import the functions from the functions file
 import func.data_processing as RocketData
-import func.run_env as RocketRunEnv
 
 from gym.envs.RocketRL.RocketEnv_2T import TwoTemp
 
