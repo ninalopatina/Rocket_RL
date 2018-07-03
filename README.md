@@ -12,7 +12,7 @@ This package presently imports fluid dynamics simulation data and plots the best
 * RocketRL.python.main.py is the main function that calls the other scripts and data.
 * RocketRL.python.func.data_processing.py imports the flow simulation data, plots the data, and creates a regression model.
 * RocketRL.python.func.ray_funcs.py plots some of the outputs from the RL algorithm 
-* RocketRL.python.envs.RocketRL.RocketEnv_2T.py contains the custom env for this task.
+* RocketRL.python.envs.RocketRL.RocketEnv.py contains the custom env for this task.
 
 ## To run:
 

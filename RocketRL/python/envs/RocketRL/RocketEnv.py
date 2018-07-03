@@ -29,15 +29,15 @@ class AllVar(gym.Env):
         # User set values are below: 
         self.num_ins = 4
         
-        self.MSE_thresh1 = 10
-        self.MSE_thresh2 = 10
-        self.MSE_thresh3 = 10
+        self.MSE_thresh1 = 1
+        self.MSE_thresh2 = 1
+        self.MSE_thresh3 = 1
         
         self.rew_goal = 10000
         self.action_range = 20
         
         self.noise = 0
-        self.minmaxbuffer = 0
+        self.minmaxbuffer = .1
 
         # Get the function of input-output values:
         self.O_CH4_flow_uniformity= self.get_funcs('O_CH4_flow_uniformity')
@@ -83,18 +83,26 @@ class AllVar(gym.Env):
         self.reset()
 
     def get_funcs(self,var):
+        #TO DO: combine this and min_max func
         fname = (var+".p")      
         try:
-            pickle_path = os.path.join(CWD_PATH,self.repo_dir,self.pick_path,fname) #on the second run
+            pickle_path = os.path.join(CWD_PATH,self.pick_path,fname)
             [coef,powers,intercept,maxes,mins] = pickle.load(open(pickle_path,'rb'))
-            self.label_dir = os.path.join(CWD_PATH, self.repo_dir,self.label_path)
-        
+            self.label_dir = os.path.join(CWD_PATH, self.label_path)
+            
         except Exception as e:
             print('error: %s'%(e))
-            pickle_path = os.path.join(CWD_PATH,'../../..',self.repo_dir,self.pick_path,fname) #on the first run
-            [coef,powers,intercept,maxes,mins] = pickle.load(open(pickle_path,'rb'))
-            self.label_dir = os.path.join(CWD_PATH,'../../..', self.repo_dir,self.label_path)
-
+            
+            try:
+                pickle_path = os.path.join(CWD_PATH,self.repo_dir,self.pick_path,fname)
+                [coef,powers,intercept,maxes,mins] = pickle.load(open(pickle_path,'rb'))
+                self.label_dir = os.path.join(CWD_PATH,self.repo_dir, self.label_path)
+            except Exception as e:
+                print('error: %s'%(e))
+            
+                pickle_path = os.path.join(CWD_PATH,'../../..',self.repo_dir,self.pick_path,fname)
+                [coef,powers,intercept,maxes,mins] = pickle.load(open(pickle_path,'rb'))
+                self.label_dir = os.path.join(CWD_PATH,'../../..', self.repo_dir,self.label_path)
         
         #the 3 function variables you need to-recreate this model
         #also the min & max to set this in the environment
@@ -105,15 +113,23 @@ class AllVar(gym.Env):
     def get_max_min(self,var):
         fname = (var+".p")
         try:
-            pickle_path = os.path.join(CWD_PATH,self.repo_dir,self.pick_path,fname)
+            pickle_path = os.path.join(CWD_PATH,self.pick_path,fname)
             [coef,powers,intercept,maxes,mins] = pickle.load(open(pickle_path,'rb'))
-            self.label_dir = os.path.join(CWD_PATH, self.repo_dir,self.label_path)
+            self.label_dir = os.path.join(CWD_PATH, self.label_path)
             
         except Exception as e:
             print('error: %s'%(e))
-            pickle_path = os.path.join(CWD_PATH,'../../..',self.repo_dir,self.pick_path,fname)
-            [coef,powers,intercept,maxes,mins] = pickle.load(open(pickle_path,'rb'))
-            self.label_dir = os.path.join(CWD_PATH,'../../..', self.repo_dir,self.label_path)
+            
+            try:
+                pickle_path = os.path.join(CWD_PATH,self.repo_dir,self.pick_path,fname)
+                [coef,powers,intercept,maxes,mins] = pickle.load(open(pickle_path,'rb'))
+                self.label_dir = os.path.join(CWD_PATH,self.repo_dir, self.label_path)
+            except Exception as e:
+                print('error: %s'%(e))
+            
+                pickle_path = os.path.join(CWD_PATH,'../../..',self.repo_dir,self.pick_path,fname)
+                [coef,powers,intercept,maxes,mins] = pickle.load(open(pickle_path,'rb'))
+                self.label_dir = os.path.join(CWD_PATH,'../../..', self.repo_dir,self.label_path)
 
         #the 3 function variables you need to-recreate this model
         #also the min & max to set this in the environment
