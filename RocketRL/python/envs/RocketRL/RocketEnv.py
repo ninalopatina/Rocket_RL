@@ -29,15 +29,15 @@ class AllVar(gym.Env):
         # User set values are below: 
         self.num_ins = 4
         
-        self.MSE_thresh1 = 1
-        self.MSE_thresh2 = 1
-        self.MSE_thresh3 = 1
+        self.MSE_thresh1 = 10
+        self.MSE_thresh2 = 10
+        self.MSE_thresh3 = 10
         
         self.rew_goal = 10000
         self.action_range = 20
         
         self.noise = 0
-        self.minmaxbuffer = .1
+        self.minmaxbuffer = 0
 
         # Get the function of input-output values:
         self.O_CH4_flow_uniformity= self.get_funcs('O_CH4_flow_uniformity')
