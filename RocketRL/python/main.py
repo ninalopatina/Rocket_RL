@@ -4,24 +4,7 @@
 Created on Wed Jun  6 11:49:31 2018
 
 This code is for an RL agent that determines the optimal input parameters for
-the desired ouput for a 3d-printed rocket engine component.
-
-Stage 0: load and visualize data, research past approaches to similar problems
-
-Stage 1: Implement an offline agent to learn optimal parameters from simulation data,
-using shallow RL
-
-Stage 2: Above with keras-rl DQN and deep SARSA
-
-Stage 3: Bootstrap above with an engineer's inputs for parameters to test
-
-Stage 4: RL agent learns the optimal input parameters
-
-Stage 5: Parallelize and asynchonize the above
-
-
-Final Stage: what should ISP (measure of thrust) look like for a particular problem
-
+the desired ouput to tune a rocket engine component.
 
 @author: ninalopatina
 """
@@ -32,38 +15,47 @@ from __future__ import print_function
 #import the functions from the functions file
 import func.data_processing as RocketData
 
-from gym.envs.RocketRL.RocketEnv_2T import TwoTemp
+#to do: fix drive path issue to import this:
+#import func.ray_funcs as RF 
 
 #import a few other funcs for the main script
 import argparse
 import os
 import yaml
 
-import gym
-from gym import spaces
-from gym.envs.registration import EnvSpec
-import pickle
-
+#imports for RLLib
 import ray
 from ray.tune import run_experiments
-from ray.tune.registry import register_env
+
+##to delete after I sort out the gym registation:
+#from gym.envs.RocketRL.RocketEnv import AllVar
+#from gym.envs.registration import EnvSpec
+#from ray.tune.registry import register_env
 
 #to run: python main.py -run True -plot False
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument('-reg','--run_reg', dest = 'run_regression', type = int, 
-                        default = 2, help = '1 to run the regression, 2 to save it. 0 neither.')   
-    parser.add_argument('-RL','--run_RL', dest = 'run_RL', type = bool, 
-                        default = True, help = 'True to run RL')   
-    parser.add_argument('-plot','--plot_data', dest = 'plot_data', type = int, 
-                        default = 0, help = '0 is none, 1 is all, 2 is 2d only, 3 is 3d')
-    parser.add_argument('-cfg','--config', dest = 'config_dir', type = str, 
-                        default = 'config/config.yml', help = '1 to run the regression, 2 to save it. 0 neither.')
-    parser.add_argument('-rayinit','--rayinit', dest = 'rayinit', type = bool, 
-                        default = True, help = 'should only be init the first time you run')                        
+    parser.add_argument('-rreg','--run_reg', dest = 'run_regression', type = bool,
+                        default = True, help = 'True to run the regression')
+    # IMPORTANT NOTE: If you turn on the below and save the regression, make sure
+    # you do not overwrite it before rolling out your policy. This should only be 
+    # toggled on or overwritten when training the model. The identical regression
+    # coefficients have to be used when rolling out or it won't work. 
+    parser.add_argument('-sreg','--save_reg', dest = 'save_regression', type = bool,
+                        default = False, help = 'True to save the regression')
+    parser.add_argument('-rRL','--run_RL', dest = 'run_RL', type = bool,
+                        default = True, help = 'True to run RL model')
+    parser.add_argument('-pRL','--plot_RL', dest = 'plot_RL', type = bool,
+                        default = True, help = 'True to plot RL results')
+    parser.add_argument('-plot','--plot_data', dest = 'plot_data', type = int,
+                        default = False, help = 'True to plot the data in 3d')
+    parser.add_argument('-cfg','--config', dest = 'config_dir', type = str,
+                        default = 'config/config.yml', help = 'where the config file is located')
+    parser.add_argument('-rayinit','--rayinit', dest = 'rayinit', type = bool,
+                        default = True, help = 'should only be init the first time you run if running in an IDE')
     args = parser.parse_args()
-    
+
     #set config path
     CWD_PATH = os.getcwd()
     config_path = os.path.join(CWD_PATH,args.config_dir)
@@ -75,36 +67,29 @@ if __name__ == "__main__":
     #add a few other cfg var
     cfg = RocketData.cfg_mod(cfg)
 
-    #TO do: set up class and run like this:
-    #rocketData = RocketData()
-    #RocketData.plotter('2d')
-    
-        
-    RocketData.labelmaker(cfg,'labels1')
-    RocketData.labelmaker(cfg,'labels2')
-    
-    
-    #TO DO: pick which to plot and turn the rest off by default
-    if (args.plot_data>0) | (args.run_regression >0):
-        df_data, approx, model = RocketData.data_process(cfg,args.plot_data,args.run_regression)
+    if (args.plot_data==True) | (args.run_regression == True):
+        # If importing new data, run the below to take a glance at it to verify
+        # if it looks reasonable.
+        RocketData.data_process(cfg,args.plot_data,args.run_regression,args.save_regression)
 
     if args.run_RL == True:
-        env_creator_name = "TwoTemp"
-        register_env(env_creator_name, lambda config: TwoTemp(config))
-        #TO DO: make this switch on/off if youve already init'd, w/   ray.disconnect()  ?
+        ##to delete after I sort out the gym registation:
+#        env_creator_name = "AllVar"
+#        register_env(env_creator_name, lambda config: AllVar(config))      
         if args.rayinit == True:
             ray.init()
         run_experiments({
             "RocketRL": {
-                "run": "PPO",#Which agent
+                "run": "PPO",# Which agent to run
                 #conditions under which you would stop:
-                "stop": {"time_total_s": 6000, "timesteps_total": 1000000, "episode_reward_mean": 100000},
-                "env": "TwoTemp",
+                "stop": {"time_total_s": 600000, "timesteps_total": 100000000, "episode_reward_mean": 100000},
+                #The custom environment: 
+                "env": "AllVar-v0",
+                #Checkpoint on every iteration:
                 "checkpoint-freq": 1,
+                #Num workers has to be 1 fewer than the available CPU!!!!!
                 "config": {
                     "num_workers": 3,
-         
-        
                 },
             },
         })

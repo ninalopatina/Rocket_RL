@@ -4,8 +4,9 @@ from gym.envs.registration import registry, register, make, spec
 # ----------------------------------------
 
 register(
-   	id='TwoTemp-v0',
-   	entry_point='gym.envs.RocketRL:TwoTemp',
+   	id='AllVar-v0',
+   	entry_point='gym.envs.RocketRL:AllVar',
+    max_episode_steps=500
 )
 
 register(
