@@ -1,7 +1,6 @@
 # figures
 results/data/figures/
 results/model/figures/
-video_labels/
 
 # references to ignore
 RocketRL/python/refs
