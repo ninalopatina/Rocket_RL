@@ -16,9 +16,14 @@ This package presently imports fluid dynamics simulation data and plots the best
 
 ## To run:
 
-1. Clone or download this package into a folder called gitrepos in your home directory (gitrepos/Rocket_RL should  match the github repo here)
+1. Clone or download this package
+```bash
+git clone https://github.com/ninalopatina/Rocket_RL.git
+```
 
-2. Note that this only works for OSX: Install requirements from requirements.txt; if you're using conda, create your new environment as below: 
+2. Install requirements from req.txt. (Note that this only works for OSX for now)
+
+2b. If you're using conda, you can create a new environment with these requirements as below: 
 
 ```bash
 $ conda create -n newenvironment --file req.txt

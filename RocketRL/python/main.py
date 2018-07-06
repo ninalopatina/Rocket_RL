@@ -90,6 +90,7 @@ if __name__ == "__main__":
                 #Num workers has to be 1 fewer than the available CPU!!!!!
                 "config": {
                     "num_workers": 3,
+                    "min_steps_per_task": 10,
                 },
             },
         })
