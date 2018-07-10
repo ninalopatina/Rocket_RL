@@ -28,6 +28,7 @@ git clone https://github.com/ninalopatina/Rocket_RL.git
 ```bash
 $ conda create -n newenvironment --file req.txt
 ```
+### Note: I just noticed that the below doesn't work correctly now; please check back after 7/10 for fixes.
 
 3. Install Ray: 
 - A few notes: Download the latest tag instead of the main branch b/c main branch doesn't build
