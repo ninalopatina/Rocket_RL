@@ -9,6 +9,9 @@ python/refs
 python/in_progress
 python/func/ray_funcs.py
 
+# saved pickles
+results/pickles/demo/
+
 # pycache
 __pycache__/
 
