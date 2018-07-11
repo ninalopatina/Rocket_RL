@@ -28,6 +28,7 @@ $ conda create -n newenv python=3
 $ source activate newenv
 $ pip install -r Rocket_RL/req.txt
 ```
+### Note: I just noticed that the below doesn't work correctly now; please check back after 7/10 for fixes.
 
 ###Note: I just noticed that the below doesn't work correctly now; please check back after 7/10 for fixes.
 
