@@ -3,11 +3,11 @@ results/data/figures/
 results/model/figures/
 
 # references to ignore
-RocketRL/python/refs
+python/refs
 
 # work in progress
-RocketRL/python/in_progress
-RocketRL/python/func/ray_funcs.py
+python/in_progress
+python/func/ray_funcs.py
 
 # pycache
 __pycache__/
