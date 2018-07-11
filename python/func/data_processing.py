@@ -35,7 +35,7 @@ def data_process(cfg, plot_data,run_regression,save_regression):
    3) (optional) 3d plot of some of the data
    4) Running a regression to make a model of the simulation environment
     """
-    data_path = os.path.join(cfg['CWD_PATH'],cfg['data_file_path'])
+    data_path = os.path.join(cfg['CWD_PATH'],cfg['repo_path'],cfg['data_file_path'])
     df = load_data(data_path)
     df = clean_data(cfg,df)
     
@@ -90,7 +90,7 @@ def save_plot(cfg,fig,title):
     """ 
     This function saves the generated figures in the file indicated by the title
     """
-    save_dir = os.path.join(cfg['CWD_PATH'], cfg['result_path'],cfg['data_result_path'])
+    save_dir = os.path.join(cfg['CWD_PATH'], cfg['repo_path'],cfg['result_path'],cfg['data_result_path'])
     fig.savefig(save_dir + title+".png")
 
 def plot_3dvar(cfg,df):
@@ -143,7 +143,7 @@ def reg_runner(cfg,df,save_regression):
 
         if save_regression == True:
             fname = (var+".p")
-            pickle_path = os.path.join(cfg['CWD_PATH'],cfg['result_path'],cfg['pickle_path'],fname)
+            pickle_path = os.path.join(cfg['CWD_PATH'],cfg['repo_path'],cfg['result_path'],cfg['pickle_path'],fname)
             # Save the 3 function variables you need to-recreate this model,
             # and the min & max to set this in the environment:
             pickle.dump([coef,powers,intercept,df.max(),df.min()],open(pickle_path,'wb'))

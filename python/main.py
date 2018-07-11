@@ -51,7 +51,7 @@ if __name__ == "__main__":
     parser.add_argument('-plot','--plot_data', dest = 'plot_data', type = int,
                         default = False, help = 'True to plot the data in 3d')
     parser.add_argument('-cfg','--config', dest = 'config_dir', type = str,
-                        default = 'config/config.yml', help = 'where the config file is located')
+                        default = 'Rocket_RL/config/config.yml', help = 'where the config file is located')
     parser.add_argument('-rayinit','--rayinit', dest = 'rayinit', type = bool,
                         default = True, help = 'should only be init the first time you run if running in an IDE')
     args = parser.parse_args()

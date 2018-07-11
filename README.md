@@ -30,11 +30,18 @@ This package imports fluid dynamics simulation data, creates a regression model 
 $ git clone https://github.com/ninalopatina/Rocket_RL.git
 ```
 
-2. Install requirements from req.txt. (Note that this only works for OSX for now). Instructions below are for installing in a new environment; you can skip the first 2 lines below if you wish to install this in an existing environment .
+2. Install requirements (Note that this only works for OSX for now). 
+
+A) Instructions below are for installing in a new conda environment. *This is recommended
 
 ```bash
-$ conda create -n newenv python=3
+$ conda create -n newenv --file req-conda.txt python=3
 $ source activate newenv
+```
+
+B) Or you can just pip install all the requirements: 
+
+```bash
 $ pip install -r Rocket_RL/req.txt
 ```
 ### Note: I just noticed that the below doesn't work correctly now; please check back after 7/10 for fixes.
@@ -66,37 +73,40 @@ Continuing their instructions:
 ```bash
 $ cd python
 $ pip install -e . --verbose
-cd ..
-python test/runtest.py 
+$ cd ..
+$ python test/runtest.py 
 ```
 
 4. Install RLlib:
-- Install snappy first if you don't already have it:
 
 ```bash
-
+$ cd python
 $ pip install ray[rllib]
 ```
--(Install instructions adapted from)[https://ray.readthedocs.io/en/latest/rllib.html]
 
-5. Go back to the root of the directory containing the Rocket_RL repo and Ray & export the Rocket_RL python path:
+5. Install gym. For some reason it didn't install from req.txt when I tested this out. 
+```bash
+$ pip install gym
+```
+
+6. Go back to the root of the directory containing the Rocket_RL repo and Ray & export the Rocket_RL python path:
 
 ```bash
 $ cd ../..
 $ export PYTHONPATH=$PYTHONPATH:`pwd`Rocket_RL/python
 ```
 
-6. The contents of the Rocket_RL/python/envs folder have to be copied to openAI gym envs folder for the rollout to work properly: python3.6/site-packages/gym/envs/
+7. The contents of the Rocket_RL/python/envs folder have to be copied to openAI gym envs folder for the rollout to work properly: python3.6/site-packages/gym/envs/
 
-7. In terminal, from the directory containing Rocket_RL, train the model with:
+8. In terminal, from the directory containing Rocket_RL, train the model with:
 
 ```Bash
 $ python Rocket_RL/python/main.py
 ```
 
-* Note: 
+* Note: --save_reg is set to False by default, so you can use the regression parameters I used in my trained model. If you would like to change these, make sure you don't save new regression variables between training (above) and rollout (below).
 
-8. To rollout your trained agent, run the below command in terminal. You will have to put the name of the folder in which the checkpoints are located in {folder_name}, for example, 'PPO_All_Var_0_2018-06-27_20-17-32lqfkwaol', and also indicate the {checkpoint} (that you have already trained past) #, i.e. 20, and number of steps, {nsteps}, i.e. 50000
+9. To rollout your trained agent, run the below command in terminal. You will have to put the name of the folder in which the checkpoints are located in {folder_name}, for example, 'PPO_All_Var_0_2018-06-27_20-17-32lqfkwaol', and also indicate the {checkpoint} (that you have already trained past) #, i.e. 20, and number of steps, {nsteps}, i.e. 50000
 
 ```Bash
 python ray/python/ray/rllib/rollout.py ~/ray_results/RocketRL/{folder_name}/checkpoint-{checkpoint} --run PPO --env AllVar-v0 --steps {nsteps}
