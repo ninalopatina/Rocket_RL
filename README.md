@@ -1,9 +1,9 @@
 # Rocket_RL
-### Reinforcement learning agent that runs fluid dynamics simulations for rocket engines.
+### Reinforcement learning agent to automate rocket engine tuning
 
 ## About
 This project was developed when I was an Insight AI Fellow, summer 2018. 
-This package presently imports fluid dynamics simulation data and plots the best-defined features. 
+This package imports fluid dynamics simulation data, creates a regression model mapping inputs --> outputs, then trains an RL agent to derive inputs to satisfy output conditions. (Demo slides)[http://goo.gl/hksviY]
 
 ## Contents
 * YML: 
@@ -18,48 +18,73 @@ This package presently imports fluid dynamics simulation data and plots the best
 
 1. Clone or download this package
 ```bash
-git clone https://github.com/ninalopatina/Rocket_RL.git
+$ git clone https://github.com/ninalopatina/Rocket_RL.git
 ```
 
-2. Install requirements from req.txt. (Note that this only works for OSX for now)
-
-2b. If you're using conda, you can create a new environment with these requirements as below: 
+2. Install requirements from req.txt. (Note that this only works for OSX for now). Instructions below are for installing in a new environment; you can skip the first 2 lines below if you wish to install this in an existing environment .
 
 ```bash
-$ conda create -n newenvironment --file req.txt
+$ conda create -n newenv python=3
+$ source activate newenv
+$ pip install -r Rocket_RL/req.txt
 ```
+
+###Note: I just noticed that the below doesn't work correctly now; please check back after 7/10 for fixes.
 
 3. Install Ray: 
-- A few notes: Download the latest tag instead of the main branch b/c main branch doesn't build
+- Note: Instructions below are to download the latest tag instead of the main branch b/c main branch doesn't build. This install takes a while. 
 ```bash
-git clone https://github.com/ray-project/ray.git
-cd ray
-git checkout tags/ray-0.4.0
+$ git clone https://github.com/ray-project/ray.git
+$ cd ray
+$ git checkout tags/ray-0.4.0
+$ cd python
 ```
-- (Install instructions)[http://ray.readthedocs.io/en/latest/installation.html] 
+
+The below is from their instructions:
+
+```bash
+brew update
+brew install cmake pkg-config automake autoconf libtool openssl bison wget
+pip install cython
+```
+
+If you are using Anaconda:
+```bash
+conda install libgcc
+```
+
+
+$ pip install -e . --verbose
+cd ..
+python test/runtest.py ****note to self: stuck here
+```
+- (Install instructions modified from)[http://ray.readthedocs.io/en/latest/installation.html] 
 
 4. Install RLlib:
 - install snappy first if you don't already have it:
 ```bash
 $ brew install snappy
+$ pip install ray[rllib]
 ```
--(Install instructions)[https://ray.readthedocs.io/en/latest/rllib.html]
+-(Install instructions adapted from)[https://ray.readthedocs.io/en/latest/rllib.html]
 
-5. In the root of this github repo, type :
+5. Go back to the root of this github repo:
+```bash
+$ cd ../..
+
+6. In the root of this github repo, type :
 ```Bash
-export PYTHONPATH=$PYTHONPATH:`pwd`/RocketRL/python
+$ export PYTHONPATH=$PYTHONPATH:`pwd`/RocketRL/python
 ```
 
-6. The contents of the env folder have to be copied to openAI gym envs folder for the rollout to work properly:
-python3.6/site-packages/gym/envs/
+7. The contents of the Rocket_RL/RocketRL/python/envs folder have to be copied to openAI gym envs folder for the rollout to work properly: python3.6/site-packages/gym/envs/
 
-7. In terminal, from the github repo folder Rocket_RL:
+8. In terminal, from the github repo folder Rocket_RL:
 ```Bash
-source activate newenvironment
-python RocketRL/python/main.py
+$ python RocketRL/python/main.py
 ```
 
-8. To see your agent rendered in the rollout, run the below command in terminal, from the directory in which ray is installed. You will have to put the name of the folder in which the checkpoints are located in {folder_name}, for example, 'PPO_TwoTemp_0_2018-06-27_20-17-32lqfkwaol', and also indicate the checkpoint (that you have already trained past) #, i.e. 20, and number of steps, i.e. 50000
+9. To see your agent rendered in the rollout, run the below command in terminal, from the directory in which ray is installed. You will have to put the name of the folder in which the checkpoints are located in {folder_name}, for example, 'PPO_TwoTemp_0_2018-06-27_20-17-32lqfkwaol', and also indicate the checkpoint (that you have already trained past) #, i.e. 20, and number of steps, i.e. 50000
 
 ```Bash
 python ray/python/ray/rllib/rollout.py ~/ray_results/RocketRL/{folder_name}/checkpoint-{checkpoint} --run PPO --env TwoTemp-v0 --steps {nsteps}
