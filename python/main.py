@@ -88,12 +88,12 @@ if __name__ == "__main__":
                 #Num workers has to be 1 fewer than the available CPU!!!!!
                 "config": {
                     "num_workers": cfg['num_workers'],
-                    "gamma": cfg['gamma'],
-                    "horizon": cfg['horizon'],
-                    "num_sgd_iter": cfg['num_sgd_iter'],
-                    "sgd_stepsize": cfg['sgd_stepsize'],
-                    "timesteps_per_batch": cfg['timesteps_per_batch'],
-                    "min_steps_per_task": cfg['min_steps_per_task']
+#                    "gamma": cfg['gamma'],
+#                    "horizon": cfg['horizon'],
+#                    "num_sgd_iter": cfg['num_sgd_iter'],
+#                    "sgd_stepsize": cfg['sgd_stepsize'],
+#                    "timesteps_per_batch": cfg['timesteps_per_batch'],
+#                    "min_steps_per_task": cfg['min_steps_per_task']
                 },
             },
         })

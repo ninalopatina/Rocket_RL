@@ -112,15 +112,17 @@ There are a few variables you can change to get a feel for the RL model:
 ### In config.config.yml:
 
 #### For the regression model:
-* reg_model: sklearn's linear regression, or Lasso CV. I prefer lasso because the L1 regularization reduces the 
+* reg_model: sklearn's linear regression, or Lasso CV. I prefer lasso because the L1 regularization penalizes the features, which generates an easier model for the agent to solve. The accuracy is indistinguishable from linreg. 
 * degree_max: You can try different degrees for the polynomial features that the model considers. It will save degree_max. I haven't gotten degree_max = 4 to work, so let me know if you do!
 
 #### For the RL model:
 
 ##### Within the environment:
+* scale_var: Scaling factor for all the inputs and outputs. Note that all of the below are multiplied by this variable, so they are expressed as a decimal. I.E., action_range is the percentage of the range that the actions can span. The interpreter was run on normalized data, so, this increases the scale. 
+
 * reward: This is the reward the agent receives upon reaching the goal. If it's not large enough, the reward increase of reaching the goal will be washed out by the negative rewards the agent accumulated in the preceding steps.
 
-* MSE_scale: Scales the MSE when calculating the negative reward. Since the MSE is small, this scales it up so the agent can better distinguish between states
+* thresh (1-3): Scales the MSE when calculating the negative reward. Since the MSE is small, this scales it up so the agent can better distinguish between states
 
 * action range: This is a continuous action space. The range is the amount the agent can go up or down in the action space. If it's too small, the agent will have to take too many steps to reach the goal, even if it knows where to go. The PPO agent will sample a smaller action space than this full range when it starts learning. 
 

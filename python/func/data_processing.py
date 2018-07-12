@@ -85,6 +85,7 @@ def norm_data(cfg,df):
     min_max_scaler = preprocessing.MinMaxScaler()
     x_scaled = min_max_scaler.fit_transform(x)
     df = pd.DataFrame(x_scaled,columns = cfg['all_var'])  
+    
     return df
 
 def graph(formula, m,c, x_range):
@@ -149,7 +150,7 @@ def reg_runner(cfg,df,save_regression):
             if cfg['reg_model'] == 'linreg':
             
                 model = make_pipeline((PolynomialFeatures(degree, interaction_only=False)), 
-                                      LinearRegression(normalize = True))
+                                      LinearRegression(normalize = False))
                 k = 'linearregression'
 
             elif cfg['reg_model'] == 'lasso':
@@ -171,4 +172,4 @@ def reg_runner(cfg,df,save_regression):
             pickle_path = os.path.join(cfg['CWD_PATH'],cfg['repo_path'],cfg['result_path'],cfg['pickle_path'],fname)
             # Save the 3 function variables you need to-recreate this model,
             # and the min & max to set this in the environment:
-            pickle.dump([coef,powers,intercept,df.max(),df.min()],open(pickle_path,'wb'))
+            pickle.dump([coef,powers,intercept],open(pickle_path,'wb'))

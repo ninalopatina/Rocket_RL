@@ -94,7 +94,7 @@ def plot_var(cfg,df):
                 var = 'Episode Reward Mean'
             elif 'len' in var:
                 var = 'Mean Steps to Target'
-                ax.set_ylim(0,1100)
+#                ax.set_ylim(0,1100)
             ax.set_title(var+' by Iteration',fontsize = fs_title)
             ax.set_ylabel(var,fontsize = fs_label)
             ax.set_xlabel('Training Iteration',fontsize = fs_label)
