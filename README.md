@@ -6,7 +6,7 @@ This project was developed when I was an Insight AI Fellow, summer 2018.
 This package imports fluid dynamics simulation data, creates a regression model mapping inputs --> outputs, then trains an RL agent to derive inputs to satisfy output conditions. (Demo slides)[http://goo.gl/hksviY]
 
 ## Contents
-* YML: config.config.yml has all of the user-set values for all of the functions. It is called by the main function.
+* YML: config.config.yml has all of the user-set values for all of the functions. It is imported to the main function & the RocketRL environment.
 
 * Data: data.rocket_data.csv contains cached flow simulation data collected from Fluent. These data were used to create a polynomial linear regression model of the fluid dynamics simulation that would be run to tune a rocket engine. This model is the "interpreter" that the OpenAI gym environment calls. 
 
@@ -15,13 +15,15 @@ This package imports fluid dynamics simulation data, creates a regression model 
 * python.func.data_processing.py imports the flow simulation data, plots the data, and creates a regression model.
 * python.func.ray_funcs.py plots some of the outputs from the RL algorithm.
 * python.envs.RocketRL.RocketEnv.py contains the custom env for this task.
-* python.envs.__init.py__ registers the custom environment. It sets the max_episode_steps.
+* python.envs.__init.py__ registers the custom environment. It also sets the max_episode_steps.
 
 * Pickles: results.pickles contains the pickles of regression powers, coefficients, and intercept from the model I trained.
 
 * video_labels contains the .png files that the rollout rendering displays.
  
-* req.txt contains the requirements to run the Rocket_RL package, excluding Ray & RLlib, whose specific installation instructions are below.
+* req-conda.txt contains the conda requirements to run the Rocket_RL package.
+* req.txt contains the pip requirements to run the Rocket_RL package.
+Both of the above exclude Ray, RLlib, and a few other packages whose specific installation instructions are below.
 
 ## To run:
 
@@ -47,7 +49,6 @@ B) Or pip install. ** I'm not sure if this works. I highly recommend option A ab
 
 ```bash
 $ pip install -r Rocket_RL/req.txt
-
 ```
 
 3. Install Ray: 
@@ -98,7 +99,7 @@ $ python Rocket_RL/python/main.py
 
 * Note: --save_reg is set to False by default, so you can use the regression parameters I used in my trained model. If you would like to change these, make sure you don't save new regression variables between training (above) and rollout (below).
 
-8. To rollout your trained agent, run the below command in terminal. You will have to put the name of the folder in which the checkpoints are located in {folder_name}, for example, 'PPO_All_Var_0_2018-06-27_20-17-32lqfkwaol', and also indicate the {checkpoint} (that you have already trained past) #, i.e. 20, and number of steps, {nsteps}, i.e. 50000
+8. To rollout your trained agent, run the below command in terminal. You will have to put the name of the folder in which the checkpoints are located as {folder_name}, for example, 'PPO_All_Var_0_2018-06-27_20-17-32lqfkwaol', and also indicate the {checkpoint} (that you have already trained past) #, i.e. 20, and number of steps to roll out, {nsteps}, i.e. 50000
 
 ```Bash
 python ray/python/ray/rllib/rollout.py ~/ray_results/RocketRL/{folder_name}/checkpoint-{checkpoint} --run PPO --env AllVar-v0 --steps {nsteps}
@@ -112,7 +113,7 @@ There are a few variables you can change to get a feel for the RL model:
 ### In config.config.yml:
 
 #### For the regression model:
-* reg_model: sklearn's linear regression, or Lasso CV. I prefer lasso because the L1 regularization penalizes the features, which generates an easier model for the agent to solve. The accuracy is indistinguishable from linreg. 
+* reg_model: sklearn's linear regression, or Lasso CV. Lasso's L1 regularization penalizes the features, which should in theory generate an easier function for the agent to solve. This doesn't seem to be working well at the moment, so I went with linreg. The accuracy is indistinguishable between the two. 
 * degree_max: You can try different degrees for the polynomial features that the model considers. It will save degree_max. I haven't gotten degree_max = 4 to work, so let me know if you do!
 
 #### For the RL model:
@@ -138,8 +139,8 @@ this to 0 to identify how the variable changes you made affect the outcome, and 
 * gamma: discount factor of the Markov Decision Process
 * horizon: steps before rollout is cut
 * num_sgd_iter: # iterations in each outer loop. Stochastic gradient descent
-* timesteps_per_batch: 
-* min_steps_per_task: 
+* timesteps_per_batch
+* min_steps_per_task 
 
 ### In python.envs.__init.py__
 * max_episode_steps - this is the maximum number of steps that the agent takes before failing at an episode. One of the limitations to PPO is that it is easy for the agent to fail to reach the target. If the max steps are too high, the agent will meander aimlessly, and learn a weird superstition that it will attempt to follow later. If the number is too low, the agent doesn't have a chance to learn how to reach the target. I have erred on both sides of this. Setting this to 1000 works well with the other parameters I set. 

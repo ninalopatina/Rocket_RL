@@ -8,15 +8,15 @@ Created on Tue Jun 19 17:21:30 2018
 
 import os
 import pandas as pd
-pd.set_option("display.max_columns",30)
 import matplotlib.pyplot as plt
+from stat import ST_CTIME
+# SEt some visualization options
+pd.set_option("display.max_columns",30)
 plt.style.use('ggplot')
 
-from stat import ST_CTIME
-  
 def rllib_plot(cfg):
     """"
-    This function opens the data RLlib saved from the last experiment and plots a few variables of interest
+    This function opens the data RLlib saved from the last experiment and plots a few variables of interest.
     """
     df = open_file(cfg)
     df = mod_df(df)
@@ -25,14 +25,14 @@ def rllib_plot(cfg):
 
 def save_plot(cfg,fig,title):
     """
-    This function saves the plot
+    This function saves the plot.
     """
     save_dir = os.path.join(cfg['CWD_PATH'],cfg['repo_path'], cfg['result_path'],cfg['model_result_path'])
     fig.savefig(save_dir + title+".png")
 
 def open_file(cfg):
     """
-    Open the most recent file
+    Open the results file from the most recent experiment.
     """
         
     dirpath = os.path.join(cfg['CWD_PATH'], cfg['ray_results_path'])

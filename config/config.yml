@@ -17,7 +17,7 @@ model_result_path: model/figures/
 #Model variables
 
 # Regression variables: 
-reg_model: lasso #either linreg or lasso. LASSO CV for L1 regularization
+reg_model: linreg #either linreg or lasso. LASSO CV for L1 regularization
 # Alpha (regularization strength) of LASSO regression
 lasso_eps: 0.0001
 lasso_nalpha: 40
@@ -33,24 +33,24 @@ test_set_fraction: .2
 # RL Variables:
 
 # Environment variables: 
-scale_var: 100 # scales all the normalized input/output values
+scale_var: 100.0 # scales all the normalized input/output values
 
 # The fraction within range of the target within which
 # we say the agent has reached the goal.
 # For each of the 3 inputs. 
-thresh1: .1 #within 10% of the target
-thresh2: .1
-thresh3: .1
+thresh1: .05 #within 5% of the target
+thresh2: .05
+thresh3: .05
 
 # Reward upon reaching the goal
 # This is multiplied by scale_var
-reward: 100
+reward: 1000
 
 # Scaling variable for the MSE:
 MSE_scale: 1 #multiply the MSE by this to get negative reward
 
 # Action range: can go up or down this % of the range
-action_range: .2
+action_range: .1
 
 # Noise is really an add-on to the regression model: it adds some random noise to
 # the deterministic regression output to more closely mimic the simulation space
@@ -65,14 +65,16 @@ minmaxbuffer: 0
   #Stopping conditions:
 time_total_s: 600000
 timesteps_total: 100000000
-episode_reward_mean: 10000
+episode_reward_mean: 100000
 
 checkpoint-freq: 1
 
 num_workers: 3 # 1 fewer than available CPU!
 
+#AGENT
+agent: 'PPO'
 
-# PPO agent variables:
+# PPO agent variables; note, these may be different if you change the agent:
 gamma: 0.995 # Discount factor of the MDP
 horizon: 2000 # Number of steps after which the rollout gets cut
 num_sgd_iter: 30 #Number of stochastic gradient descent iterations in each outer loop

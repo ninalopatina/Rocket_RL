@@ -63,19 +63,18 @@ class AllVar(gym.Env):
         self.MSE_thresh2 = (cfg['thresh2']*self.scale_var)**2
         self.MSE_thresh3 = (cfg['thresh3']*self.scale_var)**2
         
-        self.rew_goal = cfg['reward']
+        self.rew_goal = cfg['reward'] * self.scale_var
 
         self.noise = cfg['noise']
         self.minmaxbuffer = cfg['minmaxbuffer']
 
         # Get the function of input-output mapping, and max & min:
-        self.O_CH4_flow_uniformity = self.get_funcs('O_CH4_flow_uniformity')
-        self.O_CH4_mol_frac = self.get_funcs('O_CH4_mol_frac')
-        self.O_t = self.get_funcs('O_t')
+        [self.O_CH4_flow_uniformity, mins,maxes] = self.get_funcs('O_CH4_flow_uniformity')
+        [self.O_CH4_mol_frac,  mins,maxes] = self.get_funcs('O_CH4_mol_frac')
+        [self.O_t, mins, maxes] = self.get_funcs('O_t')
         
-        
-        self.min = 0
-        self.max = self.scale_var
+        self.mins = mins * self.scale_var
+        self.maxes = maxes* self.scale_var
         #Action range is a percentage of the total range
         self.action_range = cfg['action_range']*self.scale_var
 
@@ -86,7 +85,17 @@ class AllVar(gym.Env):
         #in: 1 ch4 flow, 2 ch4 t, 3 o2 flow, 4 o2 t,
         #out: 5 flow unif, 6 mol frac, 7 temp
         #out - target: 8 flow unif, 9 mol frac, 10 temp
-        self.observation_space =  Box(self.min, self.max, shape=(10,), dtype=np.float32)
+        
+        self.observation_space = Tuple((Box(self.mins.values[0],self.maxes.values[0],shape=(1,), dtype=np.float32),
+                                        Box(self.mins.values[1],self.maxes.values[1],shape=(1,), dtype=np.float32),
+                                        Box(self.mins.values[2],self.maxes.values[2],shape=(1,), dtype=np.float32),
+                                        Box(self.mins.values[3],self.maxes.values[3],shape=(1,), dtype=np.float32),
+                                        Box(self.mins.values[4],self.maxes.values[4],shape=(1,), dtype=np.float32),
+                                        Box(self.mins.values[5],self.maxes.values[5],shape=(1,), dtype=np.float32),
+                                        Box(self.mins.values[6],self.maxes.values[6],shape=(1,), dtype=np.float32),
+                                        Box(self.mins.values[4],self.maxes.values[4],shape=(1,), dtype=np.float32),
+                                        Box(self.mins.values[5],self.maxes.values[5],shape=(1,), dtype=np.float32),
+                                        Box(self.mins.values[6],self.maxes.values[6],shape=(1,), dtype=np.float32)))
         
         # TODO this isn't really a proper gym spec
         self._spec = lambda: None
@@ -107,11 +116,11 @@ class AllVar(gym.Env):
         """
         fname = (var+".p")         
         pickle_path = os.path.join(CWD_PATH,self.join_path,self.pick_path,fname)
-        [coef,powers,intercept] = pickle.load(open(pickle_path,'rb'))
+        [coef,powers,intercept,mins,maxes] = pickle.load(open(pickle_path,'rb'))
         
         # The 3 function variables you need to-recreate this model & the min & max to set this in the environment.
         out = {'coef': coef, 'powers':powers,'intercept':intercept}
-        return out
+        return out, mins, maxes
 
     def temp_func(self,var):
         """
@@ -123,14 +132,14 @@ class AllVar(gym.Env):
         for p,c in zip(var['powers'],var['coef']):
             # Exp the 4 inputs to the power for that coef
             #to plug them into the equation, un-scale them:
-            a = ((self.ins*(1/self.scale_var))**p)
+            a = np.multiply(self.ins,(1/self.scale_var))**p
             y += c* np.prod(a)
 
         #to fit this into the environment, re-scale:
         y = y * self.scale_var
 
         # Noise is a random number (positive or negative), scaled by self.noise
-        noise = random.randint(-1,1) * random.random() * self.noise * self.thresh1 * self.scale_var #scales noise
+        noise = random.randint(-1,1) * random.random() * self.noise * cfg['thresh1'] * self.scale_var #scales noise
         y += noise
         return y
 
@@ -143,9 +152,9 @@ class AllVar(gym.Env):
         
         viable = True
         for i,temp_i in enumerate(outs):
-            if (temp_i <= self.min):
+            if (temp_i <= self.mins[i+4]):
                 viable = False
-            elif (temp_i >= self.max): 
+            elif (temp_i >= self.maxes[i+4]): 
                 viable = False
         return viable
     
@@ -157,7 +166,7 @@ class AllVar(gym.Env):
         
         self.steps = 0
         if self.episode == 0:
-            self.ins = np.random.uniform(self.min,self.max,4)
+            self.ins = random.uniform(self.mins.values[:4],self.maxes.values[:4])
             #get the corresponding outputs:
             out_flow = self.temp_func(var=self.O_CH4_flow_uniformity)
             out_frac = self.temp_func(var=self.O_CH4_mol_frac)
@@ -172,7 +181,7 @@ class AllVar(gym.Env):
         #get goals from random inputs:
         viable = False
         while viable == False:
-            self.ins = np.random.uniform((self.min+self.min*self.minmaxbuffer),(self.max+self.max*self.minmaxbuffer),4)
+            self.ins = random.uniform((self.mins.values[:4]+(self.mins.values[:4]*self.minmaxbuffer)),self.maxes.values[:4]-(self.maxes.values[:4]*self.minmaxbuffer))
             out_flow = self.temp_func(var=self.O_CH4_flow_uniformity)
             out_frac = self.temp_func(var=self.O_CH4_mol_frac)
             out_temp = self.temp_func(var=self.O_t)
@@ -213,10 +222,10 @@ class AllVar(gym.Env):
 
         #If the agent tries to exceed the range of the mins & maxes, this sets them to the max. 
         for i,temp_i in enumerate(new_var):
-            if (temp_i <= self.min):
-                new_var[i] = self.min
-            elif (temp_i >= self.max): 
-                new_var[i] = self.max
+            if (temp_i <= self.mins[i]):
+                new_var[i] = self.mins[i]
+            elif (temp_i >= self.maxes[i]): 
+                new_var[i] = self.maxes[i]
 
         in_var = new_var
 

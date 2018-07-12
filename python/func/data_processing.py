@@ -40,8 +40,7 @@ def data_process(cfg, plot_data,run_regression,save_regression):
     data_path = os.path.join(cfg['CWD_PATH'],cfg['repo_path'],cfg['data_file_path'])
     df = load_data(data_path)
     df = clean_data(cfg,df)
-    
-    
+
     if plot_data==True:
         plot_3dvar(cfg,df)
 
@@ -81,10 +80,11 @@ def norm_data(cfg,df):
     """
     Normalize the data.
     """
-    x = df.values #returns a numpy array
-    min_max_scaler = preprocessing.MinMaxScaler()
-    x_scaled = min_max_scaler.fit_transform(x)
-    df = pd.DataFrame(x_scaled,columns = cfg['all_var'])  
+#    x = df.values #returns a numpy array
+#    min_max_scaler = preprocessing.MinMaxScaler()
+#    x_scaled = min_max_scaler.fit_transform(x)
+    df = df/df.max()
+#    df = pd.DataFrame(x_scaled,columns = cfg['all_var'])  
     
     return df
 
@@ -146,17 +146,18 @@ def reg_runner(cfg,df,save_regression):
          
         # Make a pipeline model with polynomial transformation and linear regression
         #run it for increasing degree of polynomial (complexity of the model)
+        # Normalize is set to False because data was already normalized.
         for degree in range(cfg['degree_min'],cfg['degree_max']+1):
             if cfg['reg_model'] == 'linreg':
             
                 model = make_pipeline((PolynomialFeatures(degree, interaction_only=False)), 
-                                      LinearRegression(normalize = False))
+                                      LinearRegression(normalize = True))
                 k = 'linearregression'
 
             elif cfg['reg_model'] == 'lasso':
                 model = make_pipeline((PolynomialFeatures(degree, interaction_only=False)), 
                               LassoCV(n_alphas=cfg['lasso_nalpha'],eps=cfg['lasso_eps'],
-                              max_iter=cfg['lasso_iter'],normalize=False,cv=cfg['cv']))
+                              max_iter=cfg['lasso_iter'],normalize=True,cv=cfg['cv']))
                 k = 'lassocv'
                 
             model.fit(X_train,y_train)
@@ -172,4 +173,4 @@ def reg_runner(cfg,df,save_regression):
             pickle_path = os.path.join(cfg['CWD_PATH'],cfg['repo_path'],cfg['result_path'],cfg['pickle_path'],fname)
             # Save the 3 function variables you need to-recreate this model,
             # and the min & max to set this in the environment:
-            pickle.dump([coef,powers,intercept],open(pickle_path,'wb'))
+            pickle.dump([coef,powers,intercept, df.min(),df.max()],open(pickle_path,'wb'))
