@@ -13,10 +13,8 @@ from __future__ import division
 from __future__ import print_function
 
 #import the functions from the functions file
-import func.data_processing as RocketData
-
-#to do: fix drive path issue to import this:
-#import func.ray_funcs as RF 
+import Rocket_RL.python.func.data_processing as RocketData
+import Rocket_RL.python.func.ray_funcs as RF 
 
 #import a few other funcs for the main script
 import argparse
@@ -82,15 +80,23 @@ if __name__ == "__main__":
             "RocketRL": {
                 "run": "PPO",# Which agent to run
                 #conditions under which you would stop:
-                "stop": {"time_total_s": 600000, "timesteps_total": 100000000, "episode_reward_mean": 100000},
+                "stop": {"time_total_s": cfg['time_total_s'], "timesteps_total": cfg['timesteps_total'], "episode_reward_mean": cfg['episode_reward_mean']},
                 #The custom environment: 
                 "env": "AllVar-v0",
                 #Checkpoint on every iteration:
-                "checkpoint-freq": 1,
+                "checkpoint-freq": cfg['checkpoint-freq'],
                 #Num workers has to be 1 fewer than the available CPU!!!!!
                 "config": {
-                    "num_workers": 3,
-                    "min_steps_per_task": 10,
+                    "num_workers": cfg['num_workers'],
+                    "gamma": cfg['gamma'],
+                    "horizon": cfg['horizon'],
+                    "num_sgd_iter": cfg['num_sgd_iter'],
+                    "sgd_stepsize": cfg['sgd_stepsize'],
+                    "timesteps_per_batch": cfg['timesteps_per_batch'],
+                    "min_steps_per_task": cfg['min_steps_per_task']
                 },
             },
         })
+    
+    if args.plot_RL == True:
+        df_model = RF.rllib_plot(cfg)

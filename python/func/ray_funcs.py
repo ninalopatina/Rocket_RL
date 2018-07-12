@@ -9,28 +9,33 @@ Created on Tue Jun 19 17:21:30 2018
 import os
 import pandas as pd
 pd.set_option("display.max_columns",30)
-
-#!/usr/bin/env python
-from stat import S_ISREG, ST_CTIME, ST_MODE
-import os, sys, time
-
-import pickle
-import os
-import yaml
-
 import matplotlib.pyplot as plt
 plt.style.use('ggplot')
+
+from stat import ST_CTIME
   
-def save_plot(cfg,fig,title):
-    """This function saves the plot
+def rllib_plot(cfg):
+    """"
+    This function opens the data RLlib saved from the last experiment and plots a few variables of interest
     """
-    save_dir = os.path.join(cfg['CWD_PATH'], cfg['result_path'],cfg['model_result_path'])
+    df = open_file(cfg)
+    df = mod_df(df)
+    plot_var(cfg,df)
+    return df
+
+def save_plot(cfg,fig,title):
+    """
+    This function saves the plot
+    """
+    save_dir = os.path.join(cfg['CWD_PATH'],cfg['repo_path'], cfg['result_path'],cfg['model_result_path'])
     fig.savefig(save_dir + title+".png")
 
-def open_file():
-    #to do: make this relative
-        # path to the directory (relative or absolute)
-    dirpath = '/Users/ninalopatina/ray_results/RocketRL/'#sys.argv[1] if len(sys.argv) == 2 else r'.'
+def open_file(cfg):
+    """
+    Open the most recent file
+    """
+        
+    dirpath = os.path.join(cfg['CWD_PATH'], cfg['ray_results_path'])
     
     # get all entries in the directory w/ stats
     entries = (os.path.join(dirpath, fn) for fn in os.listdir(dirpath))
@@ -38,28 +43,31 @@ def open_file():
     
     # leave only regular files, insert creation date
     entries = ((stat[ST_CTIME], path)
-               for stat, path in entries)# if S_ISREG(stat[ST_MODE]))
+               for stat, path in entries)
     #NOTE: on Windows `ST_CTIME` is a creation date 
     #  but on Unix it could be something else
     #NOTE: use `ST_MTIME` to sort by a modification date
 
-    #to do: figure out how to just get the last one
+    #to do: get just the last one
     for cdate, p in sorted(entries)[:]:
         if 'DS_Store' not in p:
             path = p
-    #        print(p)
         
     df = pd.read_json(path+'/result.json',lines=True)
     return df
 
 def mod_df(df):
-    #add features to plot
+    """
+    Add features to plot
+    """
     df['timesteps_per_second'] = df['timesteps_this_iter']/df['time_this_iter_s']
     return df
 
 
 def plot_var(cfg,df):
-    #use the below to plot all numerical values
+    """
+    Plot variables as determined below
+    """
     exclude = ['config', 'date','experiment_id','hostname','info','timestamp','node_ip','done']
     include = ['episode_len_mean','episode_reward_mean','timesteps_per_second']
     
@@ -92,14 +100,4 @@ def plot_var(cfg,df):
             ax.set_xlabel('Training Iteration',fontsize = fs_label)
             ax.tick_params(axis='both', which='major', labelsize=fs_ticks)
             save_plot(cfg,fig,var)
-    return df
-                
-#
-#    for var in df_info.columns:
-#        df_info.plot.scatter(x='training_iteration', y = var)
-
-def rllib_plot(cfg):
-    df = open_file()
-    df = mod_df(df)
-    plot_var(cfg,df)
     return df

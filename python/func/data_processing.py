@@ -18,12 +18,14 @@ from mpl_toolkits.mplot3d import Axes3D
 import pickle
 import os
 
+from sklearn import preprocessing
 # Import function to create training and test set splits
 from sklearn.cross_validation import train_test_split
 # Import function to automatically create polynomial features! 
 from sklearn.preprocessing import PolynomialFeatures
 # Import Linear Regression and a regularized regression function
-from sklearn.linear_model import LinearRegression
+from sklearn.linear_model import LinearRegression 
+from sklearn.linear_model import LassoCV
 # Finally, import function to make a machine learning pipeline
 from sklearn.pipeline import make_pipeline
 
@@ -39,9 +41,12 @@ def data_process(cfg, plot_data,run_regression,save_regression):
     df = load_data(data_path)
     df = clean_data(cfg,df)
     
+    
     if plot_data==True:
         plot_3dvar(cfg,df)
 
+    df = norm_data(cfg,df)
+    
     if run_regression ==True:
         reg_runner(cfg,df,save_regression)
         
@@ -70,6 +75,16 @@ def clean_data(cfg,df):
     """
     df.columns = cfg['all_var'] #change column names to what's in config.yaml
     df[cfg['change_scale']] = df[cfg['change_scale']] *1000 #scale these for visualization
+    return df
+
+def norm_data(cfg,df):
+    """
+    Normalize the data.
+    """
+    x = df.values #returns a numpy array
+    min_max_scaler = preprocessing.MinMaxScaler()
+    x_scaled = min_max_scaler.fit_transform(x)
+    df = pd.DataFrame(x_scaled,columns = cfg['all_var'])  
     return df
 
 def graph(formula, m,c, x_range):
@@ -120,6 +135,7 @@ def reg_runner(cfg,df,save_regression):
     pickle, which is accessed by the RL environment as the interpreter.
     
     """
+    
     df_inputs = df[df.columns[:4]]
  
     for var in cfg['out_var']:
@@ -130,17 +146,26 @@ def reg_runner(cfg,df,save_regression):
         # Make a pipeline model with polynomial transformation and linear regression
         #run it for increasing degree of polynomial (complexity of the model)
         for degree in range(cfg['degree_min'],cfg['degree_max']+1):
-            model = make_pipeline((PolynomialFeatures(degree, interaction_only=False)), 
-                                  LinearRegression(normalize = True))
+            if cfg['reg_model'] == 'linreg':
             
+                model = make_pipeline((PolynomialFeatures(degree, interaction_only=False)), 
+                                      LinearRegression(normalize = True))
+                k = 'linearregression'
+
+            elif cfg['reg_model'] == 'lasso':
+                model = make_pipeline((PolynomialFeatures(degree, interaction_only=False)), 
+                              LassoCV(n_alphas=cfg['lasso_nalpha'],eps=cfg['lasso_eps'],
+                              max_iter=cfg['lasso_iter'],normalize=False,cv=cfg['cv']))
+                k = 'lassocv'
+                
             model.fit(X_train,y_train)
             test_score = model.score(X_test,y_test)
-            print('Linear Regression results for degree ', str(degree), '& var ',var,': ', test_score)
-
-        coef = model.named_steps['linearregression'].coef_
+            print(cfg['reg_model'],' results for degree ', str(degree), '& var ',var,': ', test_score)
+            
+        coef = model.named_steps[k].coef_
         powers = model.named_steps['polynomialfeatures'].powers_
-        intercept = model.named_steps['linearregression'].intercept_
-
+        intercept = model.named_steps[k].intercept_
+       
         if save_regression == True:
             fname = (var+".p")
             pickle_path = os.path.join(cfg['CWD_PATH'],cfg['repo_path'],cfg['result_path'],cfg['pickle_path'],fname)

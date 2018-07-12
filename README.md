@@ -25,77 +25,72 @@ This package imports fluid dynamics simulation data, creates a regression model 
 
 ## To run:
 
-1. Clone or download this package
+1. Clone or download this package into your home directory:
+
 ```bash
 $ git clone https://github.com/ninalopatina/Rocket_RL.git
 ```
 
 2. Install requirements (Note that this only works for OSX for now). 
 
-A) Instructions below are for installing in a new conda environment. ****This is recommended
+A) In a new conda environment. ****This is highly recommended
 
 ```bash
-$ conda create -n newenv --file Rocket_RL/req-conda.txt python=3.6
-$ source activate newenv
+$ conda create -n RocketEnv --file Rocket_RL/req-conda.txt python=3.6
+$ source activate RocketEnv
+$ pip install cython
 $ pip install gym
+$ pip install pyyaml
 ```
 
-B) Or you can pip install all the requirements: 
+B) Or pip install. ** I'm not sure if this works. I highly recommend option A above.
 
 ```bash
 $ pip install -r Rocket_RL/req.txt
 
 ```
-### Note: I just noticed that the below doesn't work correctly now; please check back after 7/11 for fixes.
 
 3. Install Ray: 
-- Note: Instructions below are adapted from their (instructions)[http://ray.readthedocs.io/en/latest/installation.html], with some additions to download the latest tag instead of the main branch b/c main branch doesn't build. This install takes a while. 
+- Note: Instructions below are from (Ray docs)[http://ray.readthedocs.io/en/latest/installation.html]. This install takes a while. 
 
 ```bash
 $ brew update
-$ brew install cmake pkg-config automake autoconf libtool openssl bison wget
-$ pip install cython
+$ brew install cmake pkg-config automake autoconf libtool openssl bison wget snappy
 ```
 
 If you are using Anaconda:
+
 ```bash
 $ conda install libgcc
+$ conda install pytorch torchvision -c pytorch
 ```
 
-Modification to install the latest tag (as of 7/10/18)
+Continuing:
 ```bash
-$ brew install snappy
 $ git clone https://github.com/ray-project/ray.git
-$ cd ray
-$ git checkout tags/ray-0.4.0
-```
-
-Continuing their instructions:
-
-```bash
-$ cd python
+$ cd ray/python
 $ pip install -e . --verbose
 $ cd ..
 $ python test/runtest.py 
 ```
 
 4. Install RLlib:
-pip 
+
 ```bash
 $ cd python
 $ pip install ray[rllib]
 ```
 
-5. Go back to the root of the directory containing the Rocket_RL repo and Ray then export the Rocket_RL python path:
+5. Go back to the root of the home directory and then export the Rocket_RL python path:
 
 ```bash
 $ cd ../..
-$ export PYTHONPATH=$PYTHONPATH:`pwd`Rocket_RL/python
+$ export PYTHONPATH=$PYTHONPATH:`pwd`/Rocket_RL/python
 ```
 
-6. The contents of the Rocket_RL/python/envs folder have to be copied to openAI gym envs folder for the rollout to work properly: python3.6/site-packages/gym/envs/
+6. The contents of the Rocket_RL/python/envs folder have to be manually copied to the openAI gym envs folder for the rollout to work properly: so please copy the contents to python3.6/site-packages/gym/envs/ in the environment you're running this in
 
-7. In terminal, from the directory containing Rocket_RL, train the model with:
+7. In terminal, from the home directory, train the model with:
 
 ```Bash
 $ python Rocket_RL/python/main.py
@@ -114,14 +109,37 @@ The above should show a rendering of the trained agent in action.
 ## To customize the model:
 There are a few variables you can change to get a feel for the RL model:
 
-- In config.config.yml:
+### In config.config.yml:
 
-* For the regression model, you can try different degrees for the polynomial features that the model considers. It will save degree_max. I haven't gotten degree_max = 4 to work, so let me know if you do!
+#### For the regression model:
+* reg_model: sklearn's linear regression, or Lasso CV. I prefer lasso because the L1 regularization reduces the 
+* degree_max: You can try different degrees for the polynomial features that the model considers. It will save degree_max. I haven't gotten degree_max = 4 to work, so let me know if you do!
 
-- In python.envs.RocketRL.RocketEnv.py:
+#### For the RL model:
 
+##### Within the environment:
+* reward: This is the reward the agent receives upon reaching the goal. If it's not large enough, the reward increase of reaching the goal will be washed out by the negative rewards the agent accumulated in the preceding steps.
 
-- In python.envs.__init.py__
-max_episode_steps - this is the maximum number of steps that the agent takes before failing at an episode. One of the limitations to PPO is that it is easy for the agent to fail to reach the target. If the max steps are too high, the agent will meander aimlessly, and learn a weird superstition that it will attempt to follow later. If the number is too low, the agent doesn't have a chance to learn how to reach the target. I have erred on both sides of this. Setting this to 1000 works well with the other parameters I set. 
+* MSE_scale: Scales the MSE when calculating the negative reward. Since the MSE is small, this scales it up so the agent can better distinguish between states
+
+* action range: This is a continuous action space. The range is the amount the agent can go up or down in the action space. If it's too small, the agent will have to take too many steps to reach the goal, even if it knows where to go. The PPO agent will sample a smaller action space than this full range when it starts learning. 
+
+* noise: Noise is really an add-on to the regression model: it adds some random noise to the deterministic regression output to more closely mimic the simulation space. The range is 0-1. When prototyping new features, it helps to set 
+this to 0 to identify how the variable changes you made affect the outcome, and then adding it back in to see if it is robust to noise. 
+
+*min_max_buffer: This removes the top & bottom fraction of the input space. The range is 0-1. This is also a feature for prototyping, to simplify the problem. 
+
+##### Experiment conditions:
+* Set the total time, total timesteps, or reward mean
+
+##### PPO agent variables: 
+* gamma: discount factor of the Markov Decision Process
+* horizon: steps before rollout is cut
+* num_sgd_iter: # iterations in each outer loop. Stochastic gradient descent
+* timesteps_per_batch: 
+* min_steps_per_task: 
+
+### In python.envs.__init.py__
+* max_episode_steps - this is the maximum number of steps that the agent takes before failing at an episode. One of the limitations to PPO is that it is easy for the agent to fail to reach the target. If the max steps are too high, the agent will meander aimlessly, and learn a weird superstition that it will attempt to follow later. If the number is too low, the agent doesn't have a chance to learn how to reach the target. I have erred on both sides of this. Setting this to 1000 works well with the other parameters I set. 
 
 

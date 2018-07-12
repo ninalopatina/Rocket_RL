@@ -1,5 +1,4 @@
 from gym.envs.registration import registry, register, make, spec
-# from gym.envs.my_collection.my_awesome_env import SimpleTemp
 # Algorithmic
 # ----------------------------------------
 

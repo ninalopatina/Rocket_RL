@@ -7,7 +7,6 @@ python/refs
 
 # work in progress
 python/in_progress
-python/func/ray_funcs.py
 
 # saved pickles
 results/pickles/demo/
