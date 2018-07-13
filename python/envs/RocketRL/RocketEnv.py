@@ -73,8 +73,8 @@ class AllVar(gym.Env):
         [self.O_CH4_mol_frac,  mins,maxes] = self.get_funcs('O_CH4_mol_frac')
         [self.O_t, mins, maxes] = self.get_funcs('O_t')
         
-        self.mins = mins * self.scale_var
-        self.maxes = maxes* self.scale_var
+        self.mins = mins# * self.scale_var
+        self.maxes = maxes#* self.scale_var
         #Action range is a percentage of the total range
         self.action_range = cfg['action_range']*self.scale_var
 
@@ -132,11 +132,12 @@ class AllVar(gym.Env):
         for p,c in zip(var['powers'],var['coef']):
             # Exp the 4 inputs to the power for that coef
             #to plug them into the equation, un-scale them:
-            a = np.multiply(self.ins,(1/self.scale_var))**p
+#            a = np.multiply(self.ins,(1/self.scale_var))**p
+            a = self.ins**p
             y += c* np.prod(a)
 
         #to fit this into the environment, re-scale:
-        y = y * self.scale_var
+        y = y #* self.scale_var
 
         # Noise is a random number (positive or negative), scaled by self.noise
         noise = random.randint(-1,1) * random.random() * self.noise * cfg['thresh1'] * self.scale_var #scales noise

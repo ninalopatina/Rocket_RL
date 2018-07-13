@@ -17,23 +17,21 @@ model_result_path: model/figures/
 #Model variables
 
 # Regression variables: 
-reg_model: linreg #either linreg or lasso. LASSO CV for L1 regularization
-# Alpha (regularization strength) of LASSO regression
-lasso_eps: 0.0001
-lasso_nalpha: 40
-lasso_iter: 500000
-cv: 5
+reg_model: ridge #either linreg or ridge for L2 regularization
+alpha: 0.5 #alpha for Ridge
+norm_mode: max #either full or max: full is 0-1, max scales to the max
+
 
 # Min and max degree of polynomials features to consider
-degree_min: 3
-degree_max: 3
+degree_min: 5
+degree_max: 5
 # Test/train split
 test_set_fraction: .2
 
 # RL Variables:
 
 # Environment variables: 
-scale_var: 100.0 # scales all the normalized input/output values
+scale_var: 10.0 # scales all the normalized input/output values
 
 # The fraction within range of the target within which
 # we say the agent has reached the goal.

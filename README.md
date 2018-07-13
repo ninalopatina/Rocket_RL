@@ -112,14 +112,19 @@ There are a few variables you can change to get a feel for the RL model:
 
 ### In config.config.yml:
 
+#### The most important variable:
+
+* scale_var: This is the scaling factor for all the inputs and outputs in the regression model, and for the RL environment. In the regression, the data were normalized, then multiplied by scale_var. All of the environment variables are multiplied by this variable, i.e. action_range is the percentage of this range that the actions can span. Even though all of these variables are relative to scale_var, changes to this variable wildly change the outcome of training. So far 10 is the best value I tried. @ 1, the agent takes 10x steps to reach the target. @ 100, the model doesn't converge. I don't know why this variable is so important. 
+
 #### For the regression model:
-* reg_model: sklearn's linear regression, or Lasso CV. Lasso's L1 regularization penalizes the features, which should in theory generate an easier function for the agent to solve. This doesn't seem to be working well at the moment, so I went with linreg. The accuracy is indistinguishable between the two. 
-* degree_max: You can try different degrees for the polynomial features that the model considers. It will save degree_max. I haven't gotten degree_max = 4 to work, so let me know if you do!
+* reg_model: sklearn's unregularized Linear Regression, or Ridge. Ridge's L2 regularization has similar accuracy to linreg but is easier for the agent to solve. 
+* degree_max: You can try different degrees for the polynomial features that the model considers. It will save degree_max. 
+* norm_mode: Either normalizing 0-1 or scaling to the maximum. I tried the latter partial normalization because some of the simulation variables don't go below certain values, and I was concerned about the physics getting weird there. 
 
 #### For the RL model:
 
 ##### Within the environment:
-* scale_var: Scaling factor for all the inputs and outputs. Note that all of the below are multiplied by this variable, so they are expressed as a decimal. I.E., action_range is the percentage of the range that the actions can span. The interpreter was run on normalized data, so, this increases the scale. 
+Note that all of the below are multiplied by scale_var, so they are expressed as a decimal. 
 
 * reward: This is the reward the agent receives upon reaching the goal. If it's not large enough, the reward increase of reaching the goal will be washed out by the negative rewards the agent accumulated in the preceding steps.
 

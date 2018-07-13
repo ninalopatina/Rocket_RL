@@ -25,7 +25,7 @@ from sklearn.cross_validation import train_test_split
 from sklearn.preprocessing import PolynomialFeatures
 # Import Linear Regression and a regularized regression function
 from sklearn.linear_model import LinearRegression 
-from sklearn.linear_model import LassoCV
+from sklearn.linear_model import Ridge
 # Finally, import function to make a machine learning pipeline
 from sklearn.pipeline import make_pipeline
 
@@ -80,12 +80,15 @@ def norm_data(cfg,df):
     """
     Normalize the data.
     """
-#    x = df.values #returns a numpy array
-#    min_max_scaler = preprocessing.MinMaxScaler()
-#    x_scaled = min_max_scaler.fit_transform(x)
-    df = df/df.max()
-#    df = pd.DataFrame(x_scaled,columns = cfg['all_var'])  
-    
+    if cfg['norm_mode'] == 'full':
+        x = df.values #returns a numpy array
+        min_max_scaler = preprocessing.MinMaxScaler()
+        x_scaled = min_max_scaler.fit_transform(x)
+        df = pd.DataFrame(x_scaled,columns = cfg['all_var'])  
+    elif cfg['norm_mode'] == 'max':
+        df = df/df.max()
+
+    df = df * cfg['scale_var']
     return df
 
 def graph(formula, m,c, x_range):
@@ -154,12 +157,11 @@ def reg_runner(cfg,df,save_regression):
                                       LinearRegression(normalize = True))
                 k = 'linearregression'
 
-            elif cfg['reg_model'] == 'lasso':
+            elif cfg['reg_model'] == 'ridge':
                 model = make_pipeline((PolynomialFeatures(degree, interaction_only=False)), 
-                              LassoCV(n_alphas=cfg['lasso_nalpha'],eps=cfg['lasso_eps'],
-                              max_iter=cfg['lasso_iter'],normalize=True,cv=cfg['cv']))
-                k = 'lassocv'
-                
+                              Ridge(alpha = cfg['alpha']))
+                k = 'ridge'
+            
             model.fit(X_train,y_train)
             test_score = model.score(X_test,y_test)
             print(cfg['reg_model'],' results for degree ', str(degree), '& var ',var,': ', test_score)
