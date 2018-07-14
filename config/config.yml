@@ -23,8 +23,8 @@ norm_mode: max #either full or max: full is 0-1, max scales to the max
 
 
 # Min and max degree of polynomials features to consider
-degree_min: 5
-degree_max: 5
+degree_min: 4
+degree_max: 4
 # Test/train split
 test_set_fraction: .2
 
@@ -124,6 +124,15 @@ in_var:
   - I_O2_t
 
 out_var:
+  - O_CH4_flow_uniformity
+  - O_CH4_mol_frac
+  - O_t
+
+all_var: 
+  - I_CH4_g/s
+  - I_CH4_t
+  - I_O2_g/s
+  - I_O2_t
   - O_CH4_flow_uniformity
   - O_CH4_mol_frac
   - O_t

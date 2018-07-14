@@ -6,18 +6,18 @@ This project was developed when I was an Insight AI Fellow, summer 2018.
 This package imports fluid dynamics simulation data, creates a regression model mapping inputs --> outputs, then trains an RL agent to derive inputs to satisfy output conditions. (Demo slides)[http://goo.gl/hksviY]
 
 ## Contents
-* YML: config.config.yml has all of the user-set values for all of the functions. It is imported to the main function & the RocketRL environment.
+* YML: config/config/yml has all of the user-set values for all of the functions. It is imported to the main function & the RocketRL environment.
 
-* Data: data.rocket_data.csv contains cached flow simulation data collected from Fluent. These data were used to create a polynomial linear regression model of the fluid dynamics simulation that would be run to tune a rocket engine. This model is the "interpreter" that the OpenAI gym environment calls. 
+* Data: data/rocket_data.csv contains cached flow simulation data collected from Fluent. These data were used to create a polynomial linear regression model of the fluid dynamics simulation that would be run to tune a rocket engine. This model is the "interpreter" that the OpenAI gym environment calls. 
 
 * Python:
-* python.main.py is the main function that calls the other functions and data.
-* python.func.data_processing.py imports the flow simulation data, plots the data, and creates a regression model.
-* python.func.ray_funcs.py plots some of the outputs from the RL algorithm.
-* python.envs.RocketRL.RocketEnv.py contains the custom env for this task.
-* python.envs.__init.py__ registers the custom environment. It also sets the max_episode_steps.
+* python/main.py is the main function that calls the other functions and data.
+* python/func/data_processing.py imports the flow simulation data, plots the data, and creates a regression model.
+* python/func/ray_funcs.py plots some of the outputs from the RL algorithm.
+* python/envs/RocketRL/RocketEnv.py contains the custom env for this task.
+* python/envs/__init.py__ registers the custom environment. It also sets the max_episode_steps.
 
-* Pickles: results.pickles contains the pickles of regression powers, coefficients, and intercept from the model I trained.
+* Pickles: results/pickles contains the pickles of regression powers, coefficients, and intercept from the model I trained.
 
 * video_labels contains the .png files that the rollout rendering displays.
  

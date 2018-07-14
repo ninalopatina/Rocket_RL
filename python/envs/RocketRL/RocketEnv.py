@@ -264,7 +264,31 @@ class AllVar(gym.Env):
         self.done = done
 
         return (self.state, reward, done, {'MSE thresh': self.MSE_thresh1})
-
+    
+    def make_oval(self,c1,c2,c3):
+        temp = rendering.make_capsule(self.oval_length, self.oval_width)
+        temptrans = rendering.Transform()
+        temp.add_attr(temptrans)
+        temp.set_color(c1,c2,c3)
+        self.viewer.add_geom(temp)
+        return temptrans
+    
+    def make_rect(self,c1,c2,c3):
+        l,r,t,b = -self.rect_width/2, self.rect_width/2, self.rect_height/2, -self.rect_height/2
+        gauge = rendering.FilledPolygon([(l,b), (l,t), (r,t), (r,b)])
+        outgauge = rendering.Transform()
+        gauge.add_attr(outgauge)
+        gauge.set_color(c1,c2,c3)
+        self.viewer.add_geom(gauge)
+        return outgauge
+    
+    def make_line(self,x1,y1,x2,y2):
+        track = rendering.Line((x1,y1), (x2,y2))
+        trackis = rendering.Transform()
+        track.add_attr(trackis)
+        track.set_color(0,0,0)
+        self.viewer.add_geom(track)
+        
     def render(self, mode='human'):
         """
         This function renders the agent's actions.
@@ -304,10 +328,10 @@ class AllVar(gym.Env):
         move_up= scaley_bottom * buff_axis*.5
 
         #set sizes of shapes:
-        oval_length = 25.0
-        oval_width = 50.0
-        rect_width = 70.0
-        rect_height = 5.0 
+        self.oval_length = 25.0
+        self.oval_width = 50.0
+        self.rect_width = 70.0
+        self.rect_height = 5.0 
 
         #Step plot:
         scalestep = screen_width/cfg['scalestep']
@@ -315,9 +339,9 @@ class AllVar(gym.Env):
         #color shades:
         light_col = .7
         dark_col = 1
-        c1 = .6
-        c2 = .8
-        c3 = 1
+        c11 = .6
+        c22 = .8
+        c33 = 1
 
         if self.viewer is None:
             #TO DO: find an alternative to copy-paste to generate multiple similar shapes
@@ -325,109 +349,43 @@ class AllVar(gym.Env):
             
             #Input states:
 
-            #the temp agents
-            temp1 = rendering.make_capsule(oval_length, oval_width)
-            self.temptrans1 = rendering.Transform()
-            temp1.add_attr(self.temptrans1)
-            temp1.set_color(0,0,light_col)
-            self.viewer.add_geom(temp1)
+            #the temp action
+            self.temptrans1 = self.make_oval(0,0,light_col)
+            self.temptrans2 = self.make_oval(0,0,dark_col)
+            #flow action:
+            self.flowtrans1 = self.make_oval(light_col,0,light_col)
+            self.flowtrans2 = self.make_oval(dark_col,0,dark_col)
 
-            temp2 = rendering.make_capsule(oval_length, oval_width)
-            self.temptrans2 = rendering.Transform()
-            temp2.add_attr(self.temptrans2)
-            temp2.set_color(0,0,dark_col)
-            self.viewer.add_geom(temp2)
-
-            #flow agents:
-            flow1 = rendering.make_capsule(oval_length, oval_width)
-            self.flowtrans1 = rendering.Transform()
-            flow1.add_attr(self.flowtrans1)
-            flow1.set_color(light_col,0,light_col)
-            self.viewer.add_geom(flow1)
-
-            flow2 = rendering.make_capsule(oval_length, oval_width)
-            self.flowtrans2 = rendering.Transform()
-            flow2.add_attr(self.flowtrans2)
-            flow2.set_color(dark_col,0,dark_col)
-            self.viewer.add_geom(flow2)
-
-            #ouput states:
-           
+            #output states:
             #out1:
-            #the gauge is a rectangle
-            l,r,t,b = -rect_width/2, rect_width/2, rect_height/2, -rect_height/2
-            gauge1 = rendering.FilledPolygon([(l,b), (l,t), (r,t), (r,b)])
-            self.outgauge1 = rendering.Transform()
-            gauge1.add_attr(self.outgauge1)
-            gauge1.set_color(0,c3,0)
-            self.viewer.add_geom(gauge1)
-
+            #the gauge is a rectangle  
+            self.outgauge1 = self.make_rect(0,c33,0)
             #goal is red rectangle
-            l,r,t,b = -rect_width/2, rect_width/2, rect_height/2, -rect_height/2
-            goal1 = rendering.FilledPolygon([(l,b), (l,t), (r,t), (r,b)])
-            self.outgoal1 = rendering.Transform()
-            goal1.add_attr(self.outgoal1)
-            goal1.set_color(c3,0,0)
-            self.viewer.add_geom(goal1)
-
+            self.outgoal1= self.make_rect(c33,0,0)
+            
             #out2:
-            #the gauge is a rectangle
-            l,r,t,b = -rect_width/2, rect_width/2, rect_height/2, -rect_height/2
-            gauge2 = rendering.FilledPolygon([(l,b), (l,t), (r,t), (r,b)])
-            self.outgauge2 = rendering.Transform()
-            gauge2.add_attr(self.outgauge2)
-            gauge2.set_color(0,c2,0)
-            self.viewer.add_geom(gauge2)
-
+            #the gauge is a rectangle  
+            self.outgauge2 = self.make_rect(0,c22,0)
             #goal is red rectangle
-            l,r,t,b = -rect_width/2, rect_width/2, rect_height/2, -rect_height/2
-            goal2 = rendering.FilledPolygon([(l,b), (l,t), (r,t), (r,b)])
-            self.outgoal2 = rendering.Transform()
-            goal2.add_attr(self.outgoal2)
-            goal2.set_color(c2,0,0)
-            self.viewer.add_geom(goal2)
+            self.outgoal2= self.make_rect(c22,0,0)
 
             #out3:
-            #the gauge is a rectangle
-            l,r,t,b = -rect_width/2, rect_width/2, rect_height/2, -rect_height/2
-            gauge3 = rendering.FilledPolygon([(l,b), (l,t), (r,t), (r,b)])
-            self.outgauge3 = rendering.Transform()
-            gauge3.add_attr(self.outgauge3)
-            gauge3.set_color(0,c1,0)
-            self.viewer.add_geom(gauge3)
-
+            #the gauge is a rectangle  
+            self.outgauge3 = self.make_rect(0,c11,0)
             #goal is red rectangle
-            l,r,t,b = -rect_width/2, rect_width/2, rect_height/2, -rect_height/2
-            goal3 = rendering.FilledPolygon([(l,b), (l,t), (r,t), (r,b)])
-            self.outgoal3 = rendering.Transform()
-            goal3.add_attr(self.outgoal3)
-            goal3.set_color(c1,0,0)
-            self.viewer.add_geom(goal3)
+            self.outgoal3 = self.make_rect(c11,0,0)
 
             #lines on which "controls" sit
-            for l in range(n_sect):
-                track = rendering.Line((scalex*((l*2)+1),0), (scalex*((l*2)+1),screen_height*world_bottom))
-                self.trackis = rendering.Transform()
-                track.add_attr(self.trackis)
-                track.set_color(0,0,0)
-                self.viewer.add_geom(track)
+            for l in range(n_sect):   
+                self.make_line(scalex*((l*2)+1),0, scalex*((l*2)+1),screen_height*world_bottom)
 
             # Line separating the top and bottom of the screen. 
-            track = rendering.Line((0,world_bottom*screen_height), (screen_width,world_bottom*screen_height))
-            self.trackis = rendering.Transform()
-            track.add_attr(self.trackis)
-            track.set_color(0,0,0)
-            self.viewer.add_geom(track)
-
-            # Line on which step # is displayed
-            track = rendering.Line((scalex*1.5,axes_line1), (screen_width-scalex*1,axes_line1))
-            self.trackis = rendering.Transform()
-            track.add_attr(self.trackis)
-            track.set_color(0,0,0)
-            self.viewer.add_geom(track)
+            self.make_line(0,world_bottom*screen_height,screen_width,world_bottom*screen_height)
+            # Step # axis.
+            self.make_line(scalex*1.5,axes_line1,screen_width-scalex*1,axes_line1)
 
             # The dot tracking the step #
-            dot = rendering.make_circle(oval_length)
+            dot = rendering.make_circle(self.oval_length)
             self.dottrans = rendering.Transform()
             dot.add_attr(self.dottrans)
             dot.set_color(0,0,0)
