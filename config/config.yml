@@ -35,25 +35,25 @@ scale_var: 10.0 # scales all the normalized input/output values
 
 # The fraction within range of the target within which
 # we say the agent has reached the goal.
-# For each of the 3 inputs. 
-thresh1: .05 #within 5% of the target
-thresh2: .05
-thresh3: .05
+# For each of the 3 outputs. 
+thresh1: .04 #within 4% of the target
+thresh2: .04
+thresh3: .04
 
 # Reward upon reaching the goal
 # This is multiplied by scale_var
 reward: 1000
 
 # Scaling variable for the MSE:
-MSE_scale: 1 #multiply the MSE by this to get negative reward
+MSE_scale: 10 #multiply the MSE by this to get negative reward
 
 # Action range: can go up or down this % of the range
-action_range: .1
+action_range: .5
 
 # Noise is really an add-on to the regression model: it adds some random noise to
 # the deterministic regression output to more closely mimic the simulation space
 # Noise is a fraction of the threshold for accuracy: a fraction of thresh1
-noise: 0
+noise: .05
 
 # This removes the top & bottom fraction of the input space.
 # The range is 0-1
@@ -63,7 +63,7 @@ minmaxbuffer: 0
   #Stopping conditions:
 time_total_s: 600000
 timesteps_total: 100000000
-episode_reward_mean: 100000
+episode_reward_mean: 10000
 
 checkpoint-freq: 1
 
@@ -74,7 +74,7 @@ agent: 'PPO'
 
 # PPO agent variables; note, these may be different if you change the agent:
 gamma: 0.995 # Discount factor of the MDP
-horizon: 2000 # Number of steps after which the rollout gets cut
+horizon: 1000 # Number of steps after which the rollout gets cut
 num_sgd_iter: 30 #Number of stochastic gradient descent iterations in each outer loop
 sgd_stepsize: 0.00005
 timesteps_per_batch: 4000
@@ -82,7 +82,7 @@ min_steps_per_task: 200
 
 # Rendering settings that may need to be tweaked per model:
 buff_axis: 0.2 #buffer for top & bottom of screen 
-scalestep: 100 #number steps
+scalestep: 50 #number steps for step axis
 
 #plot variables:
 #video:

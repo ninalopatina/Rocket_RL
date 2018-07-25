@@ -10,9 +10,9 @@ The main functions are:
     1) Linear regression to map inputs --> outputs based on some cached flow
     simulation data from Fluent.
     2) Reinforcement Learning to derive inputs from target outputs.
-    3) Plotting some metrics of the training progress. This can be run 
-    concurrently while training the agent. 
-    
+    3) Plotting some metrics of the training progress. This can be run
+    concurrently while training the agent.
+
 
 @author: ninalopatina
 """
@@ -22,7 +22,7 @@ from __future__ import print_function
 
 # Import the Rocket_RL functions
 import Rocket_RL.python.func.data_processing as RocketData
-import Rocket_RL.python.func.ray_funcs as RF 
+import Rocket_RL.python.func.ray_funcs as RF
 
 # Import a few other funcs for the main script
 import argparse, os, yaml
@@ -36,7 +36,7 @@ if __name__ == "__main__":
     parser.add_argument('-rreg','--run_reg', dest = 'run_regression', type = bool,
                         default = True, help = 'True to run the regression')
     # IMPORTANT NOTE: If you turn on the below and save the regression, make sure
-    # you do not overwrite it before rolling out your policy. This should only be 
+    # you do not overwrite it before rolling out your policy. This should only be
     # toggled on or overwritten when training the model. The identical regression
     # coefficients have to be used when rolling out as training.
     parser.add_argument('-sreg','--save_reg', dest = 'save_regression', type = bool,
@@ -61,16 +61,14 @@ if __name__ == "__main__":
 
     # Add the current working path to the config var.
     cfg['CWD_PATH'] = CWD_PATH
-    # Add a few other cfg var.
-    cfg = RocketData.cfg_mod(cfg)
 
     # If importing new data, set plot_data to true to take a glance at it to verify
     # if it looks reasonable.
     if (args.plot_data==True) | (args.run_regression == True):
-        
+
         RocketData.data_process(cfg,args.plot_data,args.run_regression,args.save_regression)
 
-    if args.run_RL == True:    
+    if args.run_RL == True:
         if args.rayinit == True:
             ray.init()
         run_experiments({
@@ -78,7 +76,7 @@ if __name__ == "__main__":
                 "run": cfg['agent'],# Which agent to run
                 #conditions under which you would stop:
                 "stop": {"time_total_s": cfg['time_total_s'], "timesteps_total": cfg['timesteps_total'], "episode_reward_mean": cfg['episode_reward_mean']},
-                #The custom environment: 
+                #The custom environment:
                 "env": "AllVar-v0",
                 #Checkpoint on every iteration:
                 "checkpoint-freq": cfg['checkpoint-freq'],
@@ -94,6 +92,6 @@ if __name__ == "__main__":
                 },
             },
         })
-    
+
     if args.plot_RL == True:
         df_model = RF.rllib_plot(cfg)

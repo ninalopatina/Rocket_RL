@@ -49,17 +49,6 @@ def data_process(cfg, plot_data,run_regression,save_regression):
     if run_regression ==True:
         reg_runner(cfg,df,save_regression)
         
-def cfg_mod(cfg):
-    """
-    This function makes a modification to the config file.
-    """
-    
-     #TO DO: is below kosher?
-    all_var = cfg['in_var'].copy()
-    for item in cfg['out_var']:
-        all_var.append(item)
-    cfg['all_var']= all_var
-    return cfg
 
 def load_data(data_path):
     """

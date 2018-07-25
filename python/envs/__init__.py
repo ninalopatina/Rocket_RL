@@ -5,7 +5,6 @@ from gym.envs.registration import registry, register, make, spec
 register(
    	id='AllVar-v0',
    	entry_point='gym.envs.RocketRL:AllVar',
-    max_episode_steps=1000
 )
 
 register(
