@@ -58,7 +58,7 @@ more-itertools==4.2.0
 nbconvert==5.3.1
 nbformat==4.4.0
 notebook==5.5.0
-numpy==1.14.3
+numpy==1.22.0
 numpydoc==0.8.0
 opencv-python==3.4.1.15
 packaging==17.1
